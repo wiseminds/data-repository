@@ -1,6 +1,6 @@
-import 'package:data_repository/remote/provider/api_request.dart';
+ 
 
-import '../provider/api_response.dart';
+import 'package:data_repository/remote/index.dart';
 
 /// Api interceptor interface
 abstract class ApiInterceptor {

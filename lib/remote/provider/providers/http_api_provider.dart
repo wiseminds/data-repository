@@ -1,15 +1,15 @@
 import "dart:async";
 import 'dart:convert'; 
 import 'package:data_repository/models/api_error.dart';
-import 'package:data_repository/remote/provider/api_methods.dart';
+import 'package:data_repository/remote/api_methods.dart';
+import 'package:data_repository/remote/api_request.dart';
+import 'package:data_repository/remote/api_response.dart';
 import 'package:data_repository/utils/api_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../../file_field.dart';
-import '../api_provider.dart';
-import '../api_request.dart';
-import '../api_response.dart';
+import '../api_provider.dart'; 
 
 class HttpApiProvider extends ApiProvider {
   @override

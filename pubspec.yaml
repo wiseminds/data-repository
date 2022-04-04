@@ -1,5 +1,5 @@
 name: data_repository
-description: A new Flutter package project.
+description: A data repository for flutter, manages both local and remote api access
 version: 0.0.1
 homepage: https://github.com/wiseminds/data_repository
 repository: https://github.com/wiseminds/data_repository

@@ -1,16 +1,22 @@
 import 'dart:async';
 
+import 'package:data_repository/remote/api_request.dart';
+import 'package:data_repository/remote/api_response.dart';
 import 'package:flutter/foundation.dart';
 
 import 'cache/cache_description.dart';
 import 'cache/cache_mixin.dart';
-import 'local/local_repository.dart';
-import 'remote/provider/api_request.dart';
-import 'remote/provider/api_response.dart';
+import 'local/local_repository.dart'; 
 import 'remote/remote_repository.dart';
 import 'utils/api_config.dart';
 import 'utils/exception_formater.dart';
-import 'utils/json_utlis.dart';
+import 'utils/json_utils.dart';
+
+export 'cache/index.dart';
+export 'local/index.dart';
+export 'models/index.dart';
+export 'utils/index.dart';
+export 'remote/index.dart';
 
 typedef NetworkCall<T> = Future<T> Function();
 
