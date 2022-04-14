@@ -7,3 +7,5 @@ export 'file_field.dart';
 export 'base_api_service.dart';
 export 'base_api_service.dart';
 export 'interceptors/index.dart';
+export 'provider/api_provider.dart';
+export 'provider/providers/http_api_provider.dart';

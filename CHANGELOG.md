@@ -1,3 +1,5 @@
+## 0.0.6
+* optimized api provider
 ## 0.0.5
 * updated pagination
 ## 0.0.4

@@ -1,7 +1,8 @@
 import 'package:data_repository/models/pagination.dart';
 import 'package:data_repository/remote/interceptors/api_interceptor.dart';
+import 'package:data_repository/utils/extensions/string.dart';
 
-import 'api_methods.dart'; 
+import 'api_methods.dart';
 
 class ApiRequest<ResponseType, InnerType> {
   final String? method, nestedKey;
@@ -86,14 +87,27 @@ class ApiRequest<ResponseType, InnerType> {
     return request;
   }
 
-  String get buildQuery {
-    String q = '';
-    query.forEach((key, value) {
-      if (value != null) q += '$key=$value&';
-    });
-    // print('Building query $q, $query');
-    return q;
+  Uri get uri {
+    return Uri(host: baseUrl, path: path, queryParameters: query);
+    // '$baseUrl/$path';
+    // if (!url.contains('?'))
+    //   url += '?';
+    // else if (!url.endsWith('&')) {
+    //   url += '&';
+    // }
+    // url += buildQuery;
+    // return Uri.parse(url.normalizeUrl);
+
   }
+
+  // String get buildQuery {
+  //   String q = '';
+  //   query.forEach((key, value) {
+  //     if (value != null) q += '$key=$value&';
+  //   });
+  //   // print('Building query $q, $query');
+  //   return q;
+  // }
 }
 
 class ErrorDescription {

@@ -1,5 +1,5 @@
 import "dart:async";
-import 'dart:convert'; 
+import 'dart:convert';
 import 'package:data_repository/models/api_error.dart';
 import 'package:data_repository/remote/api_methods.dart';
 import 'package:data_repository/remote/api_request.dart';
@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../../file_field.dart';
-import '../api_provider.dart'; 
+import '../api_provider.dart';
 
 class HttpApiProvider extends ApiProvider {
   @override
@@ -40,7 +40,9 @@ class HttpApiProvider extends ApiProvider {
               request: request,
               headers: {},
               statusCode: 400,
-              error: (e is ApiError) ? e : formatErrorMessage(e,  ApiConfig().defaultErrorMessage ))
+              error: (e is ApiError)
+                  ? e
+                  : formatErrorMessage(e, ApiConfig().defaultErrorMessage))
           .resolve;
     }
 
@@ -72,9 +74,9 @@ class HttpApiProvider extends ApiProvider {
   }
 
   Uri _buildUri(ApiRequest request) {
-    var url = '${request.baseUrl}/${request.path}';
-    var uri = Uri.parse(url);
-    return uri.replace(query: request.buildQuery);
+    // var url = '${request.baseUrl}/${request.path}';
+    // var uri = Uri.parse(url);
+    return request.uri;
   }
 
   Future<http.StreamedResponse> handleMultipart(ApiRequest request) {
