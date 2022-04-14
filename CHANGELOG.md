@@ -1,4 +1,6 @@
-## 0.0.3
+## 0.0.5
+* updated pagination
+## 0.0.4
 * Added pagination to request
 ## 0.0.3
 * Added header interceptor
