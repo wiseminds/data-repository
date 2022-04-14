@@ -9,7 +9,7 @@ class ApiRequest<ResponseType, InnerType> {
   final int timeout;
   final String dataKey;
   final String baseUrl;
-  final bool hasDatatable;
+  final bool hasPagination;
   final Map<String, dynamic>? body;
   final Map<String, String> headers;
   final Map<String, dynamic> query;
@@ -19,7 +19,7 @@ class ApiRequest<ResponseType, InnerType> {
   final bool isMultipart;
 
   ApiRequest(
-      {this.hasDatatable = false,
+      {this.hasPagination = false,
       this.isMultipart = false,
       this.extra,
       this.headers = const {},
@@ -35,7 +35,7 @@ class ApiRequest<ResponseType, InnerType> {
       this.body});
 
   factory ApiRequest.dummy() => ApiRequest<ResponseType, InnerType>(
-      hasDatatable: false,
+      hasPagination: false,
       headers: {},
       query: {},
       method: ApiMethods.get,
@@ -49,7 +49,7 @@ class ApiRequest<ResponseType, InnerType> {
           String? path,
           String? dataKey,
           String? baseUrl,
-          bool? hasDatatable,
+          bool? hasPagination,
           Pagination? pagination,
           List<Extra>? extra,
           int? timeout,
@@ -61,7 +61,7 @@ class ApiRequest<ResponseType, InnerType> {
           String? nestedKey,
           Map<String, dynamic>? query}) =>
       ApiRequest<ResponseType, InnerType>(
-          hasDatatable: hasDatatable ?? this.hasDatatable,
+          hasPagination: hasPagination ?? this.hasPagination,
           headers: headers ?? this.headers,
           query: query ?? this.query,
           method: method ?? this.method,

@@ -1,4 +1,6 @@
 ## 0.0.3
+* Added pagination to request
+## 0.0.3
 * Added header interceptor
 ## 0.0.2
 * Refactored project
