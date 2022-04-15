@@ -3,7 +3,7 @@
 /// Interface for Local Repository
 abstract class LocalRepository {
   /// initialize instance of database
-  void init();
+  Future init();
 
   bool isInitialized = false;
 
