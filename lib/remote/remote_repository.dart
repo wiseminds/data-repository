@@ -1,24 +1,25 @@
-import 'dart:async'; 
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../data_repository.dart';
 // import 'api_request.dart';
-// import 'api_response.dart'; 
+// import 'api_response.dart';
 
 ///  for Remote Repository
 class RemoteRepository with ExceptionFormater {
   final String? defaultErrorMessage;
+  final ApiProvider provider;
 
-  RemoteRepository([this.defaultErrorMessage]);
+  RemoteRepository(this.provider, [this.defaultErrorMessage]);
 
   /// makes a network request
   Future<ApiResponse<ResultType, Item>> handleRequest<ResultType, Item>(
-      NetworkCall<ApiResponse<ResultType, Item>> networkCall,
+      ApiRequest<ResultType, Item> request,
       {int timeout = 50,
       bool retry = false}) async {
     ApiResponse<ResultType, Item> response;
     try {
-      response = await networkCall().timeout(Duration(seconds: timeout),
+      response = await provider.send<ResultType, Item>(request).timeout(Duration(seconds: timeout),
           onTimeout: () {
         throw (TimeoutException('Connection timed out'));
       });

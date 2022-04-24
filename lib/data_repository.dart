@@ -34,7 +34,7 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
 
   /// manages fetching data, decides where to fetch data from
   Future<ApiResponse<ResultType, Item>> handleRequest<ResultType, Item>(
-      NetworkCall<ApiResponse<ResultType, Item>> networkCall,
+      // NetworkCall<ApiResponse<ResultType, Item>> networkCall,
       ApiRequest<ResultType, Item> request,
       {CacheDescription? cache,
       int timeout = 50,
@@ -63,14 +63,14 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
 
     /// else fetches data from the remote source
     ApiResponse<ResultType, Item> response = await remoteRepository
-        .handleRequest<ResultType, Item>(networkCall, timeout: timeout);
+        .handleRequest<ResultType, Item>(request, timeout: timeout);
 
     // print('headers: ${response.request.headers}');
 
     if (!response.isSuccessful) {
       response = remoteRepository.handleError(response);
       if (retryWithCache && cache != null) {
-        return handleRequest(networkCall, request,
+        return handleRequest(request,
             cache: cache.copyWith(overrideTime: true));
       }
     }
