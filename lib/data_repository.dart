@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 
 import 'cache/cache_description.dart';
 import 'cache/cache_mixin.dart';
-import 'local/local_repository.dart'; 
+import 'local/local_repository.dart';
 import 'remote/remote_repository.dart';
 import 'utils/api_config.dart';
 import 'utils/exception_formater.dart';
@@ -35,6 +35,7 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
   /// manages fetching data, decides where to fetch data from
   Future<ApiResponse<ResultType, Item>> handleRequest<ResultType, Item>(
       NetworkCall<ApiResponse<ResultType, Item>> networkCall,
+      ApiRequest<ResultType, Item> request,
       {CacheDescription? cache,
       int timeout = 50,
       bool retryWithCache = false,
@@ -47,14 +48,16 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
       var data = await localRepository.getData(cache!.key);
       // data = JsonInterceptor.convertFromJson<ResultType, Item>(data);
       // print('${data != null && data is ResultType}');
-      // if (kDebugMode) print('fetching data from cache $data');
-      if (data != null && data is ResultType) {
-        return ApiResponse<ResultType, Item>(
-            request: ApiRequest.dummy(),
-            bodyString: data.toString(),
-            // body: data,
-            headers: {},
-            statusCode: 210).resolve;
+      if (kDebugMode) print('fetching data from cache $data');
+      if (data != null) {
+        var res = ApiResponse<ResultType, Item>(
+                request: request,
+                bodyString: data.toString(),
+                // body: data,
+                headers: {},
+                statusCode: 210)
+            .resolve;
+        if (res.body != null) return res;
       }
     }
 
@@ -67,7 +70,7 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
     if (!response.isSuccessful) {
       response = remoteRepository.handleError(response);
       if (retryWithCache && cache != null) {
-        return handleRequest(networkCall,
+        return handleRequest(networkCall, request,
             cache: cache.copyWith(overrideTime: true));
       }
     }

@@ -1,3 +1,7 @@
+## 0.1.1
+* updated data repository
+## 0.1.0
+* added request to data repository parameters
 ## 0.0.8
 * Updated Api URI parser
 ## 0.0.7
@@ -13,5 +17,4 @@
 ## 0.0.2
 * Refactored project
 ## 0.0.1
-
 * Finished basic setup
