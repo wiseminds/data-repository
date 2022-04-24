@@ -1,3 +1,5 @@
+## 0.0.8
+* Updated Api URI parser
 ## 0.0.7
 * optimized api provider
 ## 0.0.6

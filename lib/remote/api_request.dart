@@ -88,7 +88,9 @@ class ApiRequest<ResponseType, InnerType> {
   }
 
   Uri get uri {
-    return Uri(host: baseUrl, path: path, queryParameters: query);
+    var u = Uri.parse('$baseUrl/$path').normalizePath();
+    u.replace(queryParameters: {...query, ...u.queryParameters});
+    return u;
     // '$baseUrl/$path';
     // if (!url.contains('?'))
     //   url += '?';
@@ -97,7 +99,6 @@ class ApiRequest<ResponseType, InnerType> {
     // }
     // url += buildQuery;
     // return Uri.parse(url.normalizeUrl);
-
   }
 
   // String get buildQuery {
