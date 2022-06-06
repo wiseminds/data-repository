@@ -12,7 +12,7 @@ extension ToIntEx on Object {
   int? get asInt {
     if (this is int) return this as int;
     try {
-      return int.tryParse(this.toString());
+      return int.tryParse(toString());
     } catch (e) {
       return null;
     }

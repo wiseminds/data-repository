@@ -32,7 +32,7 @@ class ApiResponse<BodyType, InnerType> {
           {int? statusCode,
           Object? error,
           Map<String, dynamic>? headers,
-          dynamic? bodyString,
+          dynamic bodyString,
           BodyType? body,
           Pagination? pagination,
           Map<String, dynamic>? extra,

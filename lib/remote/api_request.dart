@@ -1,6 +1,5 @@
 import 'package:data_repository/models/pagination.dart';
 import 'package:data_repository/remote/interceptors/api_interceptor.dart';
-import 'package:data_repository/utils/extensions/string.dart';
 
 import 'api_methods.dart';
 
