@@ -1,4 +1,6 @@
 
+## 0.1.4
+* Fixed cache not resolving data
 ## 0.1.3
 * Fixed url encoding issue
 * Fixed multi-part request builder

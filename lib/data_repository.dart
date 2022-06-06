@@ -50,9 +50,9 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
       // print('${data != null && data is ResultType}');
       if (kDebugMode) print('fetching data from cache $data');
       if (data != null) {
-        var res = ApiResponse<ResultType, Item>(
-                request: request,
-                bodyString: data.toString(),
+         var res = ApiResponse<ResultType, Item>(
+                request: request.copyWith(dataKey: '', nestedKey: ''),
+                bodyString: Jsonutils.decode(data),
                 // body: data,
                 headers: {},
                 statusCode: 210)
