@@ -10,16 +10,15 @@ class Jsonutils {
   static dynamic decode(String json) {
     return jsonDecode(json);
   }
- 
 
-   static dynamic convertToJson(dynamic data) {
+  static dynamic convertToJson(dynamic data) {
     return json.encode(_encode(data));
   }
 
   static dynamic _serialize<T>(dynamic value) {
-    if(value is Map<String, dynamic> || value is String) return value;
+    if (value is Map<String, dynamic> || value is String) return value;
     try {
-      if(value.toJson != null) return value.toJson();
+      if (value.toJson != null) return value.toJson();
     } catch (e) {
       if (kDebugMode) {
         print(e);

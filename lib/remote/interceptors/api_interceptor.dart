@@ -1,5 +1,3 @@
- 
-
 import 'package:data_repository/remote/index.dart';
 
 /// Api interceptor interface

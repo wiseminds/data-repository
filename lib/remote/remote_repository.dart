@@ -19,8 +19,9 @@ class RemoteRepository with ExceptionFormater {
       bool retry = false}) async {
     ApiResponse<ResultType, Item> response;
     try {
-      response = await provider.send<ResultType, Item>(request).timeout(Duration(seconds: timeout),
-          onTimeout: () {
+      response = await provider
+          .send<ResultType, Item>(request)
+          .timeout(Duration(seconds: timeout), onTimeout: () {
         throw (TimeoutException('Connection timed out'));
       });
     } catch (e) {

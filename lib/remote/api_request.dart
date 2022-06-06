@@ -89,7 +89,10 @@ class ApiRequest<ResponseType, InnerType> {
 
   Uri get uri {
     var u = Uri.parse('$baseUrl/$path').normalizePath();
-    u.replace(queryParameters: {...query, ...u.queryParameters});
+    u.replace(queryParameters: {
+      ...query.map<String, String>((key, value) => MapEntry(key, '$headers')),
+      ...u.queryParameters
+    });
     return u;
     // '$baseUrl/$path';
     // if (!url.contains('?'))

@@ -1,5 +1,3 @@
- 
-
 /// Interface for Local Repository
 abstract class LocalRepository {
   /// initialize instance of database

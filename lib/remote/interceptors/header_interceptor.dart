@@ -1,5 +1,5 @@
 import 'package:data_repository/remote/api_request.dart';
-import 'package:flutter/foundation.dart'; 
+import 'package:flutter/foundation.dart';
 
 import 'api_interceptor.dart';
 

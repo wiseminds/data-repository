@@ -1,5 +1,5 @@
 import 'package:data_repository/local/local_repository.dart';
-import 'package:data_repository/remote/index.dart'; 
+import 'package:data_repository/remote/index.dart';
 import 'package:flutter/foundation.dart';
 
 import 'cache_description.dart';

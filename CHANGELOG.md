@@ -1,3 +1,7 @@
+
+## 0.1.3
+* Fixed url encoding issue
+* Fixed multi-part request builder
 ## 0.1.2
 * updated data repository, added api provider to remote repository
 ## 0.1.1
