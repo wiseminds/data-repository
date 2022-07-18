@@ -1,4 +1,6 @@
 
+## 0.1.5
+* Fixed query parameters not added to Uri
 ## 0.1.4
 * Fixed cache not resolving data
 ## 0.1.3
