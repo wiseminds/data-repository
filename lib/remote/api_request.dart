@@ -89,7 +89,7 @@ class ApiRequest<ResponseType, InnerType> {
   Uri get uri {
     var u = Uri.parse('$baseUrl/$path').normalizePath();
    return u.replace(queryParameters: {
-      ...query.map<String, String>((key, value) => MapEntry(key, '$headers')),
+      ...query.map<String, String>((key, value) => MapEntry(key, '$value')),
       ...u.queryParameters
     });
     // return u;
