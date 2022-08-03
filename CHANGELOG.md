@@ -1,4 +1,6 @@
 
+## 0.1.7
+* Fixed cache algorithm
 ## 0.1.6
 * Fixed query parameters not added to Uri
 ## 0.1.5

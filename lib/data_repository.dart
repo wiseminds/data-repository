@@ -49,16 +49,15 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
       // data = JsonInterceptor.convertFromJson<ResultType, Item>(data);
       // print('${data != null && data is ResultType}');
       if (kDebugMode) print('fetching data from cache $data');
-      if (data != null) {
-         var res = ApiResponse<ResultType, Item>(
-                request: request.copyWith(dataKey: '', nestedKey: ''),
-                bodyString: Jsonutils.decode(data),
-                // body: data,
-                headers: {},
-                statusCode: 210)
-            .resolve;
-        if (res.body != null) return res;
-      }
+      var d = Jsonutils.decode(data);
+      var res = ApiResponse<ResultType, Item>(
+              request: request.copyWith(dataKey: '', nestedKey: ''),
+              bodyString: d,
+              // body: data,
+              headers: {},
+              statusCode: 210)
+          .resolve;
+      if (res.body != null && (d is! List || (d).isNotEmpty)) return res;
     }
 
     /// else fetches data from the remote source
