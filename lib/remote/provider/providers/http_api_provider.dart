@@ -88,7 +88,15 @@ class HttpApiProvider extends ApiProvider {
 
     request.body?.forEach((key, value) async {
       if (value is FileFormField) {
-        req.files.add(await http.MultipartFile.fromPath(key, value.path));
+        if (value.bytes != null) {
+          req.files.add(await http.MultipartFile.fromBytes(key, value.bytes!));
+        } else if (value.stringFile != null) {
+          req.files
+              .add(await http.MultipartFile.fromString(key, value.stringFile!));
+        } else {
+          req.files
+              .add(await http.MultipartFile.fromPath(key, value.path ?? ''));
+        }
       } else {
         req.fields[key] = value.toString();
       }

@@ -1,5 +1,7 @@
 
-## 0.1.7
+## 0.1.9
+* Added suport for bytes upload
+## 0.1.8
 * Removed api provider from base api service
 ## 0.1.7
 * Fixed cache algorithm

@@ -1,10 +1,14 @@
 /// class for handling file upload
 class FileFormField {
   /// file path
-  final String path;
+  final String? path;
 
   /// file key to be used in the form data
-  final String? key;
+  final String? key, stringFile;
 
-  FileFormField({required this.path, this.key});
+  /// file bytes
+  final List<int>? bytes;
+ 
+
+  FileFormField({this.bytes, this.stringFile,  this.path, this.key});
 }
