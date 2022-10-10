@@ -1,4 +1,5 @@
-
+## 0.1.10
+* updated suport for bytes upload
 ## 0.1.9
 * Added suport for bytes upload
 ## 0.1.8
