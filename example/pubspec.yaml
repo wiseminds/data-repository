@@ -68,6 +68,8 @@ analyzer:
   errors:
     invalid_annotation_target: ignore
 
+
+
 # The following section is specific to Flutter packages.
 flutter:
 

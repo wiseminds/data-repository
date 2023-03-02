@@ -1,4 +1,5 @@
 import 'package:data_repository/data_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 
 class HiveRepository implements LocalRepository {
@@ -32,8 +33,10 @@ class HiveRepository implements LocalRepository {
   Future<bool> checkCache(String key) async {
     if (!isInitialized) await init();
     var time = await cacheTimeBox.get(key);
-    print(
-        'cache: $key, $time, ${await cacheTimeBox.get(key)} ${DateTime.fromMillisecondsSinceEpoch(time ?? 001)}');
+    if (kDebugMode) {
+      print(
+          'cache: $key, $time, ${await cacheTimeBox.get(key)} ${DateTime.fromMillisecondsSinceEpoch(time ?? 001)}');
+    }
     if (time == null) return false;
     // return
     try {
