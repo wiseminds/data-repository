@@ -2,6 +2,7 @@ import 'package:data_repository/remote/index.dart';
 import 'package:example/constants/api_urls.dart';
 import 'package:example/data/api_client.dart';
 import 'package:example/data/interceptors/json_interceptor.dart';
+import 'package:example/data/interceptors/network_duration_interceptor.dart';
 import 'package:example/models/error_model/error_model.dart';
 import 'package:example/models/index.dart';
 import 'package:example/models/post/post.dart';
@@ -37,6 +38,7 @@ class PostApi {
             "Content-Type": "application/json",
             "Accept": "application/json",
           }),
+          NetworkDurationInterceptor(),
           JsonInterceptor<ErrorModel>(Models.factories),
         ]);
   }

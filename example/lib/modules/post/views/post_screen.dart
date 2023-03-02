@@ -12,6 +12,29 @@ class PostScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => PostCubit(),
       child: Scaffold(
+          bottomNavigationBar: Builder(builder: (context) {
+            return context.watch<PostCubit>().state.requestDuration != null
+                ? Material(
+                    color: Theme.of(context).primaryColor,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 10.0),
+                      child: Text.rich(
+                        TextSpan(children: [
+                          const TextSpan(text: 'Request completed in'),
+                          TextSpan(
+                              text:
+                                  ' ${context.watch<PostCubit>().state.requestDuration} ',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          const TextSpan(text: ' milliseconds')
+                        ]),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  )
+                : const SizedBox();
+          }),
           appBar: AppBar(
             title: const Text('Posts'),
             actions: [

@@ -1,3 +1,4 @@
+import 'package:data_repository/data_repository.dart';
 import 'package:equatable/equatable.dart';
 import 'package:example/models/post/post.dart';
 import 'package:flutter/foundation.dart';
@@ -16,7 +17,8 @@ class PostCubit extends Cubit<PostState> {
     emit(state.loading());
 
     final response = await _repository.getPost();
-    emit(state.copyWith(isLoading: false));
+    emit(state.copyWith(
+        isLoading: false, requestDuration: response.extra?.getKey('duration')));
 
     if (response.isSuccessful) {
       emit(state.copyWith(data: response.body));
