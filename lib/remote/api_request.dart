@@ -1,9 +1,12 @@
 import 'package:data_repository/models/pagination.dart';
 import 'package:data_repository/remote/interceptors/api_interceptor.dart';
+import 'package:flutter/foundation.dart';
 
 import 'api_methods.dart';
 
 class ApiRequest<ResponseType, InnerType> {
+  /// an ID used to track individual requests
+  final String requestId;
   final String? method, nestedKey;
   final String path;
   final int timeout;
@@ -19,7 +22,8 @@ class ApiRequest<ResponseType, InnerType> {
   final bool isMultipart;
 
   ApiRequest(
-      {this.hasPagination = false,
+      {String? requestId,
+      this.hasPagination = false,
       this.isMultipart = false,
       this.extra,
       this.headers = const {},
@@ -32,7 +36,8 @@ class ApiRequest<ResponseType, InnerType> {
       this.path = '',
       required this.baseUrl,
       this.timeout = 50,
-      this.body});
+      this.body})
+      : requestId = requestId ?? UniqueKey().toString();
 
   factory ApiRequest.dummy() => ApiRequest<ResponseType, InnerType>(
       hasPagination: false,
@@ -61,6 +66,7 @@ class ApiRequest<ResponseType, InnerType> {
           String? nestedKey,
           Map<String, dynamic>? query}) =>
       ApiRequest<ResponseType, InnerType>(
+          requestId: requestId,
           hasPagination: hasPagination ?? this.hasPagination,
           headers: headers ?? this.headers,
           query: query ?? this.query,
@@ -88,29 +94,11 @@ class ApiRequest<ResponseType, InnerType> {
 
   Uri get uri {
     var u = Uri.parse('$baseUrl/$path').normalizePath();
-   return u.replace(queryParameters: {
+    return u.replace(queryParameters: {
       ...query.map<String, String>((key, value) => MapEntry(key, '$value')),
       ...u.queryParameters
     });
-    // return u;
-    // '$baseUrl/$path';
-    // if (!url.contains('?'))
-    //   url += '?';
-    // else if (!url.endsWith('&')) {
-    //   url += '&';
-    // }
-    // url += buildQuery;
-    // return Uri.parse(url.normalizeUrl);
   }
-
-  // String get buildQuery {
-  //   String q = '';
-  //   query.forEach((key, value) {
-  //     if (value != null) q += '$key=$value&';
-  //   });
-  //   // print('Building query $q, $query');
-  //   return q;
-  // }
 }
 
 class ErrorDescription {
