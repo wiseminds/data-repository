@@ -10,9 +10,7 @@ class PostRepository extends DataRepository {
 
   final _api = PostApi();
 
-  Future<ApiResponse<List<Post>, Post>> getPost() async {
-    return await handleRequest(_api.getPost(),
-        cache: CacheDescription('posts-list',
-            lifeSpan: CacheDescription.oneMinute));
+  Future<ApiResponse<List<Post>, Post>> getPost(CacheDescription? cache) async {
+    return await handleRequest(_api.getPost(), cache: cache);
   }
 }
