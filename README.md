@@ -148,3 +148,4 @@ class NetworkDurationInterceptor extends ApiInterceptor {
 
 ```
 >> Check the example app for sample code
+More examples comming soon
