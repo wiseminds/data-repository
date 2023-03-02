@@ -1,12 +1,10 @@
 A data repository for flutter, manages both local and remote api access
 
 ## Features
+see sample [here](http://data-repository.wiseminds.cc/#/)
+
 
 ## Getting started
-
-Documentation coming soon
-
-## Usage
 
 > Define your implementation of local and remote repositories.
 
