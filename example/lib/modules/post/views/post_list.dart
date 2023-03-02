@@ -33,14 +33,14 @@ class _PostListState extends State<PostList> {
           return const Center(child: Text('No posts found'));
         }
         return ListView.builder(
-          itemCount: state.data?.length,
-          itemBuilder: (c, i) {
-          var item = state.data![i];
-          return ListTile(
-              leading: Text('${item.id}'),
-              title: Text(item.title),
-              subtitle: Text(item.body ?? ''));
-        });
+            itemCount: state.data?.length,
+            itemBuilder: (c, i) {
+              var item = state.data![i];
+              return ListTile(
+                  leading: Text('${item.id}'),
+                  title: Text(item.title),
+                  subtitle: Text(item.body ?? ''));
+            });
       },
     );
   }

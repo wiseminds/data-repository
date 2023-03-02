@@ -92,8 +92,7 @@ class HttpApiProvider extends ApiProvider {
           req.files.add(http.MultipartFile.fromBytes(key, value.bytes!,
               filename: value.path));
         } else if (value.stringFile != null) {
-          req.files.add(http.MultipartFile.fromString(
-              key, value.stringFile!,
+          req.files.add(http.MultipartFile.fromString(key, value.stringFile!,
               filename: value.path));
         } else {
           req.files
