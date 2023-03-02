@@ -1,3 +1,5 @@
+## 0.2.1
+* Fixed analysis issues
 ## 0.2.0
 * Added id request to identify unique request
 * Updated README
