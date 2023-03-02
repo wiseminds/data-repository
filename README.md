@@ -38,7 +38,7 @@ class PostApi  {
                 "Accept": "application/json",
         }),
           JsonInterceptor<ErrorModel>(DepartmentModels.factories),
-          AuthInterceptor(),
+          NetworkDurationInterceptor(),
         ]);
   }
 }
@@ -83,6 +83,70 @@ you can use your repository in you view model to fetch data and manage state bas
   }
 
 ```
+### caching
+in your repository, you can set `CacheDescription` to define if you want request to be cached.
+you set the key, and the lifespan
+
+```dart
+
+  Future<ApiResponse<List<Post>, Post>> getPost() async {
+    return await handleRequest(_api.getPost(),
+        cache: CacheDescription('posts-list',
+            lifeSpan: CacheDescription.oneMinute));
+  }
+```
 
 
+### interceptors
+You can define interceptors to intercept request or response objects
+Interceptors run before a request is fulfilled, and after response is gotten.
+To create an interceptor, extend the `ApiInterceptor` class and override `onRequest` to 
+intercept request and `onResponse` to intercept response and `onError` to intercept request error.
+
+```dart
+
+class NetworkDurationInterceptor extends ApiInterceptor {
+  Map<String, int> timestamp = {};
+
+  @override
+  ApiResponse<ResponseType, InnerType> onResponse<ResponseType, InnerType>(
+      ApiResponse<ResponseType, InnerType> response) {
+    if (kDebugMode) {
+      print(
+          'NetworkDurationInterceptor ${response.statusCode}, ${response.request.requestId}, $timestamp ${timestamp[response.request.requestId]}');
+    }
+
+    var duration = DateTime.now().millisecondsSinceEpoch -
+        (timestamp.remove(response.request.requestId) ?? 00);
+
+    if (kDebugMode) {
+      print('request completed in $duration milliseconds');
+    }
+
+    return response.copyWith(extra: {...?response.extra, 'duration': duration});
+  }
+
+  @override
+  ApiRequest<ResponseType, InnerType> onRequest<ResponseType, InnerType>(
+      ApiRequest<ResponseType, InnerType> request) {
+    timestamp
+        .addAll({request.requestId: DateTime.now().millisecondsSinceEpoch});
+    return request; //.copyWith(: );
+  }
+
+  @override
+  ApiResponse<ResponseType, InnerType> onError<ResponseType, InnerType>(
+      ApiResponse<ResponseType, InnerType> response) {
+    var duration = DateTime.now().millisecondsSinceEpoch -
+        (timestamp.remove(response.request.requestId) ?? 00);
+
+    if (kDebugMode) {
+      print('request completed with error in $duration milliseconds');
+    }
+
+    return response.copyWith(extra: {...?response.extra, 'duration': duration});
+  }
+}
+
+```
 >> Check the example app for sample code

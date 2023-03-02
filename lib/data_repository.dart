@@ -45,6 +45,7 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
     /// fetches data from cache if a valid cached data exists
     if (_useCache) {
       if (kDebugMode) print('fetching data from cache');
+      request.build;
       var data = await localRepository.getData(cache!.key);
       // data = JsonInterceptor.convertFromJson<ResultType, Item>(data);
       // print('${data != null && data is ResultType}');

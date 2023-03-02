@@ -29,7 +29,7 @@ class RemoteRepository with ExceptionFormater {
       if (kDebugMode) print(e.toString());
       response = ApiResponse<ResultType, Item>(
           bodyString: null,
-          request: ApiRequest.dummy(),
+          request: request,
           error: (e is ApiError)
               ? e
               : formatErrorMessage(e, defaultErrorMessage ?? ''),
