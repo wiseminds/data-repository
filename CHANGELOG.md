@@ -1,3 +1,7 @@
+## 0.2.0
+* Added id request to identify unique request
+* Updated README
+* Added example app
 ## 0.1.10
 * updated suport for bytes upload
 ## 0.1.9

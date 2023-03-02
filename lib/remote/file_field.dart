@@ -8,7 +8,6 @@ class FileFormField {
 
   /// file bytes
   final List<int>? bytes;
- 
 
-  FileFormField({this.bytes, this.stringFile,  this.path, this.key});
+  FileFormField({this.bytes, this.stringFile, this.path, this.key});
 }
