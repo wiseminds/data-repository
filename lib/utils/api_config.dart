@@ -5,6 +5,5 @@ class ApiConfig {
   factory ApiConfig() {
     return _singleton;
   }
-
   ApiConfig._internal();
 }
