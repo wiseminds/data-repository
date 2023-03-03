@@ -56,7 +56,7 @@ class PostScreen extends StatelessWidget {
                             DropdownMenuEntry(
                                 value: CacheDescription(
                                     'posts-list-ten-seconds',
-                                    lifeSpan: CacheDescription.oneMinute),
+                                    lifeSpan: CacheDescription.oneSecond * 10),
                                 label: 'Ten seconds cache')
                           ])),
               Builder(builder: (context) {
