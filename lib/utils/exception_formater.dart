@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:data_repository/models/api_error.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ExceptionFormater {
@@ -64,6 +64,11 @@ class ExceptionFormater {
       default:
         message = message ?? defaultErrorMessage;
         code = code ?? 7011;
+    }
+    if (error.toString().contains('SocketException')) {
+      message =
+          'Could not connect to the server please check your internet connection';
+      code = 7000;
     }
     return (error is ApiError) ? error : ApiError(message!, code!);
   }
