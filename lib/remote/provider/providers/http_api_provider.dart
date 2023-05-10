@@ -1,5 +1,6 @@
 import "dart:async";
 import 'dart:convert';
+
 import 'package:data_repository/models/api_error.dart';
 import 'package:data_repository/remote/api_methods.dart';
 import 'package:data_repository/remote/api_request.dart';
@@ -7,6 +8,8 @@ import 'package:data_repository/remote/api_response.dart';
 import 'package:data_repository/utils/api_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 
 import '../../file_field.dart';
 import '../api_provider.dart';
@@ -95,8 +98,10 @@ class HttpApiProvider extends ApiProvider {
           req.files.add(http.MultipartFile.fromString(key, value.stringFile!,
               filename: value.path));
         } else {
-          req.files
-              .add(await http.MultipartFile.fromPath(key, value.path ?? ''));
+          req.files.add(await http.MultipartFile.fromPath(key, value.path ?? '',
+          // filename: value.path?.split('/').last ?? '',
+              contentType:
+                  MediaType.parse(lookupMimeType(value.path ?? '') ?? '')));
         }
       } else {
         req.fields[key] = value.toString();

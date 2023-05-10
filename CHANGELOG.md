@@ -1,4 +1,6 @@
 ## 0.2.2
+* Added mimetype for file upload
+## 0.2.2
 * Updated exception filter
 ## 0.2.1
 * Fixed analysis issues
