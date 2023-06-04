@@ -1,4 +1,4 @@
-## 0.2.3
+## 0.2.4
 * Added support for patch on http client
 ## 0.2.3
 * Added mimetype for file upload
