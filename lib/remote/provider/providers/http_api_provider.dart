@@ -65,6 +65,10 @@ class HttpApiProvider extends ApiProvider {
     switch (request.method) {
       case ApiMethods.delete:
         return http.delete(uri, headers: request.headers);
+      case ApiMethods.patch:
+        return http.patch(uri, headers: request.headers);
+      case ApiMethods.head:
+        return http.head(uri, headers: request.headers);
       case ApiMethods.post:
         return http.post(uri,
             headers: request.headers, body: jsonEncode(request.body));
@@ -99,7 +103,7 @@ class HttpApiProvider extends ApiProvider {
               filename: value.path));
         } else {
           req.files.add(await http.MultipartFile.fromPath(key, value.path ?? '',
-          // filename: value.path?.split('/').last ?? '',
+              // filename: value.path?.split('/').last ?? '',
               contentType:
                   MediaType.parse(lookupMimeType(value.path ?? '') ?? '')));
         }
