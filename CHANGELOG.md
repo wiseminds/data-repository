@@ -1,3 +1,5 @@
+## 0.3.0
+* Upgraded packages
 ## 0.2.4
 * Added support for patch on http client
 ## 0.2.3

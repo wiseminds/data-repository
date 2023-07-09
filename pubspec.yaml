@@ -1,6 +1,6 @@
 name: data_repository
 description: A data repository for flutter, manages both local and remote api access
-version: 0.2.4
+version: 0.3.0
 homepage: https://github.com/wiseminds/data-repository
 repository: https://github.com/wiseminds/data-repository
 
@@ -11,15 +11,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.4  
+  http: ^1.1.0
   http_parser: ^4.0.2
   mime: ^1.0.4
-  path_provider: ^2.0.9  
+  path_provider: ^2.0.15 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
