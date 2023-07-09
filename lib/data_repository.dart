@@ -40,10 +40,10 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
       int timeout = 50,
       bool retryWithCache = false,
       bool retry = false}) async {
-    bool _useCache = await shouldUseCache(localRepository, cache);
+    bool useCache = await shouldUseCache(localRepository, cache);
 
     /// fetches data from cache if a valid cached data exists
-    if (_useCache) {
+    if (useCache) {
       if (kDebugMode) print('fetching data from cache');
       request.build;
       var data = await localRepository.getData(cache!.key);
