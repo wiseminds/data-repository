@@ -1,12 +1,14 @@
-class Pagination {
-  final int total, limit, pages, page;
-  final String? order, query;
-
+extension PaginationExt on Pagination {
   // check if there is a next page
   bool get hasNext => page < pages;
 
   // check if there is a previous page
   bool get hasPrevious => page > 1;
+}
+
+class Pagination {
+  final int total, limit, pages, page;
+  final String? order, query;
 
   Pagination(
       {this.total = 0,
