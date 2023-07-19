@@ -23,7 +23,6 @@ mixin _$Pagination {
   int get pages => throw _privateConstructorUsedError;
   int get total => throw _privateConstructorUsedError;
   int get page => throw _privateConstructorUsedError;
-  int get chunkCount => throw _privateConstructorUsedError;
   int get limit => throw _privateConstructorUsedError;
   String? get order => throw _privateConstructorUsedError;
   String? get query => throw _privateConstructorUsedError;
@@ -44,7 +43,6 @@ abstract class $PaginationCopyWith<$Res> {
       {int pages,
       int total,
       int page,
-      int chunkCount,
       int limit,
       String? order,
       String? query});
@@ -66,7 +64,6 @@ class _$PaginationCopyWithImpl<$Res, $Val extends Pagination>
     Object? pages = null,
     Object? total = null,
     Object? page = null,
-    Object? chunkCount = null,
     Object? limit = null,
     Object? order = freezed,
     Object? query = freezed,
@@ -83,10 +80,6 @@ class _$PaginationCopyWithImpl<$Res, $Val extends Pagination>
       page: null == page
           ? _value.page
           : page // ignore: cast_nullable_to_non_nullable
-              as int,
-      chunkCount: null == chunkCount
-          ? _value.chunkCount
-          : chunkCount // ignore: cast_nullable_to_non_nullable
               as int,
       limit: null == limit
           ? _value.limit
@@ -116,7 +109,6 @@ abstract class _$$_PaginationCopyWith<$Res>
       {int pages,
       int total,
       int page,
-      int chunkCount,
       int limit,
       String? order,
       String? query});
@@ -136,7 +128,6 @@ class __$$_PaginationCopyWithImpl<$Res>
     Object? pages = null,
     Object? total = null,
     Object? page = null,
-    Object? chunkCount = null,
     Object? limit = null,
     Object? order = freezed,
     Object? query = freezed,
@@ -153,10 +144,6 @@ class __$$_PaginationCopyWithImpl<$Res>
       page: null == page
           ? _value.page
           : page // ignore: cast_nullable_to_non_nullable
-              as int,
-      chunkCount: null == chunkCount
-          ? _value.chunkCount
-          : chunkCount // ignore: cast_nullable_to_non_nullable
               as int,
       limit: null == limit
           ? _value.limit
@@ -181,7 +168,6 @@ class _$_Pagination implements _Pagination {
       {this.pages = 1,
       this.total = 0,
       this.page = 1,
-      this.chunkCount = 10,
       this.limit = 10,
       this.order,
       this.query});
@@ -200,9 +186,6 @@ class _$_Pagination implements _Pagination {
   final int page;
   @override
   @JsonKey()
-  final int chunkCount;
-  @override
-  @JsonKey()
   final int limit;
   @override
   final String? order;
@@ -211,7 +194,7 @@ class _$_Pagination implements _Pagination {
 
   @override
   String toString() {
-    return 'Pagination(pages: $pages, total: $total, page: $page, chunkCount: $chunkCount, limit: $limit, order: $order, query: $query)';
+    return 'Pagination(pages: $pages, total: $total, page: $page, limit: $limit, order: $order, query: $query)';
   }
 
   @override
@@ -222,8 +205,6 @@ class _$_Pagination implements _Pagination {
             (identical(other.pages, pages) || other.pages == pages) &&
             (identical(other.total, total) || other.total == total) &&
             (identical(other.page, page) || other.page == page) &&
-            (identical(other.chunkCount, chunkCount) ||
-                other.chunkCount == chunkCount) &&
             (identical(other.limit, limit) || other.limit == limit) &&
             (identical(other.order, order) || other.order == order) &&
             (identical(other.query, query) || other.query == query));
@@ -231,8 +212,8 @@ class _$_Pagination implements _Pagination {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, pages, total, page, chunkCount, limit, order, query);
+  int get hashCode =>
+      Object.hash(runtimeType, pages, total, page, limit, order, query);
 
   @JsonKey(ignore: true)
   @override
@@ -253,7 +234,6 @@ abstract class _Pagination implements Pagination {
       {final int pages,
       final int total,
       final int page,
-      final int chunkCount,
       final int limit,
       final String? order,
       final String? query}) = _$_Pagination;
@@ -267,8 +247,6 @@ abstract class _Pagination implements Pagination {
   int get total;
   @override
   int get page;
-  @override
-  int get chunkCount;
   @override
   int get limit;
   @override

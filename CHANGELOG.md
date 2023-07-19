@@ -1,3 +1,6 @@
+## 0.4.0
+* Removed chunkCount
+* Added getter to check has next page and previous page
 ## 0.3.0
 * Upgraded packages
 ## 0.2.4

@@ -10,7 +10,6 @@ class Pagination extends d.Pagination with _$Pagination {
       {@Default(1) int pages,
       @Default(0) int total,
       @Default(1) int page,
-      @Default(10) int chunkCount,
       @Default(10) int limit,
       String? order,
       String? query}) = _Pagination;
