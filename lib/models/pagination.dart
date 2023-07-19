@@ -2,6 +2,8 @@ class Pagination {
   final int total, limit, pages, page;
   final String? order, query;
 
+  bool get hasNext => page < pages;
+
   Pagination(
       {this.total = 0,
       this.limit = 0,
