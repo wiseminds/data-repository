@@ -44,21 +44,27 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
 
     /// fetches data from cache if a valid cached data exists
     if (useCache) {
-      if (kDebugMode) print('fetching data from cache');
-      request.build;
-      var data = await localRepository.getData(cache!.key);
-      // data = JsonInterceptor.convertFromJson<ResultType, Item>(data);
-      // print('${data != null && data is ResultType}');
-      if (kDebugMode) print('fetching data from cache $data');
-      var d = Jsonutils.decode(data);
-      var res = ApiResponse<ResultType, Item>(
-              request: request.copyWith(dataKey: '', nestedKey: ''),
-              bodyString: d,
-              // body: data,
-              headers: {},
-              statusCode: 210)
-          .resolve;
-      if (res.body != null && (d is! List || (d).isNotEmpty)) return res;
+      try {
+        if (kDebugMode) print('fetching data from cache');
+        request.build;
+        var data = await localRepository.getData(cache!.key);
+        // data = JsonInterceptor.convertFromJson<ResultType, Item>(data);
+        // print('${data != null && data is ResultType}');
+        if (kDebugMode) print('fetching data from cache $data');
+        var d = Jsonutils.decode(data);
+        var res = ApiResponse<ResultType, Item>(
+                request: request.copyWith(dataKey: '', nestedKey: ''),
+                bodyString: d,
+                // body: data,
+                headers: {},
+                statusCode: 210)
+            .resolve;
+        if (res.body != null && (d is! List || (d).isNotEmpty)) return res;
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }
     }
 
     /// else fetches data from the remote source
