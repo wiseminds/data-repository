@@ -1,3 +1,5 @@
+## 0.4.3
+* Fixed double slash in path segment
 ## 0.4.1
 * Fixed JSONUtils null issue
 ## 0.4.1
