@@ -1,6 +1,6 @@
 name: data_repository
 description: A data repository for flutter, manages both local and remote api access
-version: 0.4.3
+version: 0.4.4
 homepage: https://github.com/wiseminds/data-repository
 repository: https://github.com/wiseminds/data-repository
 

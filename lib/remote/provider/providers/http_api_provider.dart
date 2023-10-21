@@ -64,9 +64,11 @@ class HttpApiProvider extends ApiProvider {
     // print('rrrrrrrrrrrr $uri');
     switch (request.method) {
       case ApiMethods.delete:
-        return http.delete(uri, headers: request.headers);
+        return http.delete(uri,
+            headers: request.headers, body: jsonEncode(request.body));
       case ApiMethods.patch:
-        return http.patch(uri, headers: request.headers);
+        return http.patch(uri,
+            headers: request.headers, body: jsonEncode(request.body));
       case ApiMethods.head:
         return http.head(uri, headers: request.headers);
       case ApiMethods.post:

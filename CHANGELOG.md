@@ -1,3 +1,5 @@
+## 0.4.4
+* Fixed body payload for patch and delete methods in the default http provider
 ## 0.4.3
 * Fixed double slash in path segment
 ## 0.4.1
