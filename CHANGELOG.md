@@ -1,3 +1,5 @@
+## 0.4.5
+* Updated error messaage
 ## 0.4.4
 * Fixed body payload for patch and delete methods in the default http provider
 ## 0.4.3
