@@ -24,8 +24,8 @@ class ExceptionFormater {
       case HttpException:
       case RedirectException:
       case WebSocketException:
-        message =
-            'Could not connect to the server please check your internet connection';
+        message = 'Please check your internet connection and try again';
+        // 'Could not connect to the server please check your internet connection';
         code = 7000;
         break;
       case FormatException:
@@ -58,7 +58,7 @@ class ExceptionFormater {
         break;
 
       case TimeoutException:
-        message = 'Connection Timed out please check your internet connection';
+        message =  'Connection Timed out please check your internet connection';
         code = 7009;
         break;
       default:
@@ -66,8 +66,8 @@ class ExceptionFormater {
         code = code ?? 7011;
     }
     if (error.toString().contains('SocketException')) {
-      message =
-          'Could not connect to the server please check your internet connection';
+      message = 'Please check your internet connection and try again';
+      // 'Could not connect to the server please check your internet connection';
       code = 7000;
     }
     return (error is ApiError) ? error : ApiError(message!, code!);
