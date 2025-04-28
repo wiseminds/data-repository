@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../data_repository.dart';
@@ -19,22 +20,24 @@ class RemoteRepository with ExceptionFormater {
       bool retry = false}) async {
     ApiResponse<ResultType, Item> response;
     try {
+      print('sending request');
       response = await provider
           .send<ResultType, Item>(request)
           .timeout(Duration(seconds: timeout), onTimeout: () {
         throw (TimeoutException('Connection timed out'));
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
       if (kDebugMode) print(' error in request ');
       if (kDebugMode) print(e.toString());
+      if (kDebugMode) print(stackTrace.toString());
       response = ApiResponse<ResultType, Item>(
-          bodyString: null,
+          bodyString: {},
           request: request,
           error: (e is ApiError)
               ? e
               : formatErrorMessage(e, defaultErrorMessage ?? ''),
           headers: {},
-          statusCode: 200);
+          statusCode: 420);
     }
     return response;
   }
@@ -52,7 +55,8 @@ class RemoteRepository with ExceptionFormater {
     // ApiError((b) => b
     //   ..statusCode = response.statusCode ?? 400
     //   ..message = Strings.DEFAULT_ERROR_MESSAGE);
-    if ((response.statusCode) > 490) {
+    if ((response.statusCode) > 490 &&
+        response.request.ovveride500Error == false) {
       error = ApiError(defaultErrorMessage ?? '', response.statusCode);
 
       // error.statusCode = response.statusCode ?? 400;

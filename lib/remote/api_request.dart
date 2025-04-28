@@ -13,6 +13,7 @@ class ApiRequest<ResponseType, InnerType> {
   final String dataKey;
   final String baseUrl;
   final bool hasPagination;
+  final bool? ovveride500Error;
   final Map<String, dynamic>? body;
   final Map<String, String> headers;
   final Map<String, dynamic> query;
@@ -26,6 +27,7 @@ class ApiRequest<ResponseType, InnerType> {
       this.hasPagination = false,
       this.isMultipart = false,
       this.extra,
+      this.ovveride500Error = true,
       this.headers = const {},
       this.query = const {},
       this.error,
@@ -58,6 +60,7 @@ class ApiRequest<ResponseType, InnerType> {
           Pagination? pagination,
           List<Extra>? extra,
           int? timeout,
+          bool? ovveride500Error,
           bool? isMultipart,
           Map<String, dynamic>? body,
           Map<String, String>? headers,
@@ -78,6 +81,7 @@ class ApiRequest<ResponseType, InnerType> {
           extra: extra ?? this.extra,
           error: error ?? this.error,
           timeout: timeout ?? this.timeout,
+          ovveride500Error: ovveride500Error ?? this.ovveride500Error,
           baseUrl: baseUrl ?? this.baseUrl,
           interceptors: [...?interceptors, ...this.interceptors],
           body: body ?? this.body);

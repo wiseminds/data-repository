@@ -3,7 +3,9 @@ class ApiError {
   final int code;
 
   ApiError(this.message, this.code);
-  // final T? error;
 
-  // ApiError(this.message, this.code, [this.error]);
+  @override
+  String toString() {
+    return 'ApiError(message: $message, code: $code)';
+  }
 }

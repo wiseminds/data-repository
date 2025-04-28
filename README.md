@@ -147,5 +147,41 @@ class NetworkDurationInterceptor extends ApiInterceptor {
 }
 
 ```
+
+### Test Example
+
+```dart
+
+
+void main() {
+  group('HttpApiProvider Tests', () {
+    late LocalRepository localRepository;
+    late RemoteRepository remoteRepository;
+    late TestRepository repository;
+
+    setUp(() {
+      remoteRepository = RemoteRepository(MockHttpApiProvider());
+      localRepository = MapRepository();
+      repository = TestRepository(localRepository, remoteRepository);
+    });
+
+    test('Test Exception Formater', () async {
+      for (var type in ExceptionFormater.errorToObject.keys) {
+        print('testing $type');
+        var response = await repository.triggerError(type);
+        expect(response.error, isA<ApiError>());
+        expect(
+            (response.error as ApiError).message,
+            repository
+                .formatErrorMessage(ExceptionFormater.errorToObject[type], '')
+                .message);
+         
+      }
+    });
+ 
+  });
+}
+
+```
 >> Check the example app for sample code
 More examples comming soon

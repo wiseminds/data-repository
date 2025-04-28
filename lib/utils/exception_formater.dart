@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class ExceptionFormater {
+mixin ExceptionFormater {
   static const networkError = 7000;
   static const formatError = 7000;
 
@@ -14,7 +14,7 @@ class ExceptionFormater {
     String? message;
     int? code;
     // if (kDebugMode) print(error is ApiError);
-    if (kDebugMode) print(error?.runtimeType);
+     if (kDebugMode) print('formatErrorMessage, ${error.runtimeType}');
     switch (error.runtimeType) {
       case ApiError:
         message = error.message ?? defaultErrorMessage;
@@ -58,7 +58,7 @@ class ExceptionFormater {
         break;
 
       case TimeoutException:
-        message =  'Connection Timed out please check your internet connection';
+        message = 'Connection Timed out please check your internet connection';
         code = 7009;
         break;
       default:
@@ -71,5 +71,21 @@ class ExceptionFormater {
       code = 7000;
     }
     return (error is ApiError) ? error : ApiError(message!, code!);
+  }
+
+  static Map<String, Exception> get errorToObject {
+    return {
+      'SocketException': const SocketException(''),
+      'HttpException': const HttpException(''),
+      'RedirectException': const RedirectException('', []),
+      'WebSocketException': const WebSocketException(''),
+      'FileSystemException': const FileSystemException(''),
+      'TlsException': const TlsException(''),
+      'TimeoutException': TimeoutException(''),
+      'MissingPluginException': MissingPluginException(''),
+      'NetworkImageLoadException': NetworkImageLoadException(
+          statusCode: 500, uri: Uri.https('google.com')),
+      'CertificateException': const CertificateException(''),
+    };
   }
 }
