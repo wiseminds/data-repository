@@ -9,7 +9,8 @@ class TestRepository extends DataRepository {
 
   final _api = TestApi();
 
-  Future<ApiResponse<Map<String, dynamic>, Map<String, dynamic>>> triggerError(String? errorType) async {
+  Future<ApiResponse<Map<String, dynamic>, Map<String, dynamic>>> triggerError(
+      String? errorType) async {
     return await handleRequest(_api.triggerError(errorType));
   }
 

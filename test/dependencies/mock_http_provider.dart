@@ -1,4 +1,5 @@
 import 'package:data_repository/data_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mockito/mockito.dart';
 
 class MockHttpApiProvider extends Mock implements ApiProvider {
@@ -6,7 +7,9 @@ class MockHttpApiProvider extends Mock implements ApiProvider {
   @override
   Future<ApiResponse<ResultType, InnerType>> send<ResultType, InnerType>(
       ApiRequest<ResultType, InnerType> request) {
-    print('handling request, ${request.path}, ${request.query}');
+    if (kDebugMode) {
+      print('handling request, ${request.path}, ${request.query}');
+    }
     // Mock implementation: return a fake ApiResponse based on the request
     switch (request.path) {
       case '/cache':
@@ -18,7 +21,8 @@ class MockHttpApiProvider extends Mock implements ApiProvider {
         ));
       case '/error':
         // print(ExceptionFormater.errorToObject);
-        var error = ExceptionFormater.errorToObject[request.query['type'].toString()];
+        var error =
+            ExceptionFormater.errorToObject[request.query['type'].toString()];
         throw error!;
       default:
         return Future.value(ApiResponse<ResultType, InnerType>(

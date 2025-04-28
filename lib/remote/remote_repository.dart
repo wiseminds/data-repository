@@ -20,7 +20,6 @@ class RemoteRepository with ExceptionFormater {
       bool retry = false}) async {
     ApiResponse<ResultType, Item> response;
     try {
-      print('sending request');
       response = await provider
           .send<ResultType, Item>(request)
           .timeout(Duration(seconds: timeout), onTimeout: () {

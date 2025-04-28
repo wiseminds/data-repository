@@ -14,7 +14,7 @@ mixin ExceptionFormater {
     String? message;
     int? code;
     // if (kDebugMode) print(error is ApiError);
-     if (kDebugMode) print('formatErrorMessage, ${error.runtimeType}');
+    if (kDebugMode) print('formatErrorMessage, ${error.runtimeType}');
     switch (error.runtimeType) {
       case ApiError:
         message = error.message ?? defaultErrorMessage;

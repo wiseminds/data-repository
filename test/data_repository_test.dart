@@ -1,4 +1,5 @@
 import 'package:data_repository/data_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'dependencies/mock_http_provider.dart';
@@ -18,7 +19,9 @@ void main() {
 
     test('Test Exception Formater', () async {
       for (var type in ExceptionFormater.errorToObject.keys) {
-        print('testing $type');
+        if (kDebugMode) {
+          print('testing $type');
+        }
         var response = await repository.triggerError(type);
         expect(response.error, isA<ApiError>());
         expect(
@@ -26,7 +29,6 @@ void main() {
             repository
                 .formatErrorMessage(ExceptionFormater.errorToObject[type], '')
                 .message);
-         
       }
     });
 

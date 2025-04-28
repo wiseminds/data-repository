@@ -41,7 +41,7 @@ abstract class DataRepository with ExceptionFormater, CacheMixin {
       bool retryWithCache = false,
       bool retry = false}) async {
     bool useCache = await shouldUseCache(localRepository, cache);
- print('fetching data');
+
     /// fetches data from cache if a valid cached data exists
     if (useCache) {
       try {

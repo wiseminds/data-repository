@@ -1,3 +1,7 @@
+## 0.5.0
+* filter out network error correctly
+* Updated packages
+* Updated constraints
 ## 0.4.5
 * Updated error messaage
 ## 0.4.4

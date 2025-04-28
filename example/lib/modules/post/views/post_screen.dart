@@ -40,7 +40,7 @@ class PostScreen extends StatelessWidget {
               Builder(
                   builder: (context) => DropdownMenu<CacheDescription?>(
                           menuStyle: MenuStyle(
-                              side: MaterialStateProperty.all(
+                              side: WidgetStateProperty.all(
                                   const BorderSide(color: Colors.white))),
                           textStyle: const TextStyle(color: Colors.white),
                           onSelected: context.read<PostCubit>().cacheUpdated,
