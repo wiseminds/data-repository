@@ -2,6 +2,7 @@
 * filter out network error correctly
 * Updated packages
 * Updated constraints
+* Added sample test to readme
 ## 0.4.5
 * Updated error messaage
 ## 0.4.4
