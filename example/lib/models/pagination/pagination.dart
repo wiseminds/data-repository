@@ -5,7 +5,7 @@ part 'pagination.freezed.dart';
 part 'pagination.g.dart';
 
 @freezed
-class Pagination extends d.Pagination with _$Pagination {
+abstract class Pagination with _$Pagination implements d.Pagination {
   factory Pagination(
       {@Default(1) int pages,
       @Default(0) int total,

@@ -3,9 +3,7 @@ import 'package:data_repository/data_repository.dart';
 import 'test_api.dart';
 
 class TestRepository extends DataRepository {
-  TestRepository(
-      LocalRepository localRepository, RemoteRepository remoteRepository)
-      : super(localRepository, remoteRepository);
+  TestRepository(super.localRepository, super.remoteRepository);
 
   final _api = TestApi();
 

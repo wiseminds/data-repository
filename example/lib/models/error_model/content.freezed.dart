@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,92 +10,73 @@ part of 'content.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
-
-Content _$ContentFromJson(Map<String, dynamic> json) {
-  return _Content.fromJson(json);
-}
 
 /// @nodoc
 mixin _$Content {
-  String? get message => throw _privateConstructorUsedError;
-  String? get rule => throw _privateConstructorUsedError;
+  String? get message;
+  String? get rule;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $ContentCopyWith<Content> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $ContentCopyWith<$Res> {
-  factory $ContentCopyWith(Content value, $Res Function(Content) then) =
-      _$ContentCopyWithImpl<$Res, Content>;
-  @useResult
-  $Res call({String? message, String? rule});
-}
-
-/// @nodoc
-class _$ContentCopyWithImpl<$Res, $Val extends Content>
-    implements $ContentCopyWith<$Res> {
-  _$ContentCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of Content
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $ContentCopyWith<Content> get copyWith =>
+      _$ContentCopyWithImpl<Content>(this as Content, _$identity);
+
+  /// Serializes this Content to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? message = freezed,
-    Object? rule = freezed,
-  }) {
-    return _then(_value.copyWith(
-      message: freezed == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String?,
-      rule: freezed == rule
-          ? _value.rule
-          : rule // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is Content &&
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.rule, rule) || other.rule == rule));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, message, rule);
+
+  @override
+  String toString() {
+    return 'Content(message: $message, rule: $rule)';
   }
 }
 
 /// @nodoc
-abstract class _$$_ContentCopyWith<$Res> implements $ContentCopyWith<$Res> {
-  factory _$$_ContentCopyWith(
-          _$_Content value, $Res Function(_$_Content) then) =
-      __$$_ContentCopyWithImpl<$Res>;
-  @override
+abstract mixin class $ContentCopyWith<$Res> {
+  factory $ContentCopyWith(Content value, $Res Function(Content) _then) =
+      _$ContentCopyWithImpl;
   @useResult
   $Res call({String? message, String? rule});
 }
 
 /// @nodoc
-class __$$_ContentCopyWithImpl<$Res>
-    extends _$ContentCopyWithImpl<$Res, _$_Content>
-    implements _$$_ContentCopyWith<$Res> {
-  __$$_ContentCopyWithImpl(_$_Content _value, $Res Function(_$_Content) _then)
-      : super(_value, _then);
+class _$ContentCopyWithImpl<$Res> implements $ContentCopyWith<$Res> {
+  _$ContentCopyWithImpl(this._self, this._then);
 
+  final Content _self;
+  final $Res Function(Content) _then;
+
+  /// Create a copy of Content
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? message = freezed,
     Object? rule = freezed,
   }) {
-    return _then(_$_Content(
+    return _then(_self.copyWith(
       message: freezed == message
-          ? _value.message
+          ? _self.message
           : message // ignore: cast_nullable_to_non_nullable
               as String?,
       rule: freezed == rule
-          ? _value.rule
+          ? _self.rule
           : rule // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
@@ -103,60 +85,85 @@ class __$$_ContentCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Content implements _Content {
-  _$_Content({this.message, this.rule});
-
-  factory _$_Content.fromJson(Map<String, dynamic> json) =>
-      _$$_ContentFromJson(json);
+class _Content implements Content {
+  _Content({this.message, this.rule});
+  factory _Content.fromJson(Map<String, dynamic> json) =>
+      _$ContentFromJson(json);
 
   @override
   final String? message;
   @override
   final String? rule;
 
+  /// Create a copy of Content
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'Content(message: $message, rule: $rule)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$ContentCopyWith<_Content> get copyWith =>
+      __$ContentCopyWithImpl<_Content>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$ContentToJson(
+      this,
+    );
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Content &&
+            other is _Content &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.rule, rule) || other.rule == rule));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, message, rule);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$_ContentCopyWith<_$_Content> get copyWith =>
-      __$$_ContentCopyWithImpl<_$_Content>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$_ContentToJson(
-      this,
-    );
+  String toString() {
+    return 'Content(message: $message, rule: $rule)';
   }
 }
 
-abstract class _Content implements Content {
-  factory _Content({final String? message, final String? rule}) = _$_Content;
-
-  factory _Content.fromJson(Map<String, dynamic> json) = _$_Content.fromJson;
-
+/// @nodoc
+abstract mixin class _$ContentCopyWith<$Res> implements $ContentCopyWith<$Res> {
+  factory _$ContentCopyWith(_Content value, $Res Function(_Content) _then) =
+      __$ContentCopyWithImpl;
   @override
-  String? get message;
-  @override
-  String? get rule;
-  @override
-  @JsonKey(ignore: true)
-  _$$_ContentCopyWith<_$_Content> get copyWith =>
-      throw _privateConstructorUsedError;
+  @useResult
+  $Res call({String? message, String? rule});
 }
+
+/// @nodoc
+class __$ContentCopyWithImpl<$Res> implements _$ContentCopyWith<$Res> {
+  __$ContentCopyWithImpl(this._self, this._then);
+
+  final _Content _self;
+  final $Res Function(_Content) _then;
+
+  /// Create a copy of Content
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? message = freezed,
+    Object? rule = freezed,
+  }) {
+    return _then(_Content(
+      message: freezed == message
+          ? _self.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String?,
+      rule: freezed == rule
+          ? _self.rule
+          : rule // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+// dart format on

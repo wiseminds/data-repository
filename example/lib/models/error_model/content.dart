@@ -4,7 +4,7 @@ part 'content.freezed.dart';
 part 'content.g.dart';
 
 @freezed
-class Content with _$Content {
+abstract class Content with _$Content {
   factory Content({
     String? message,
     String? rule,

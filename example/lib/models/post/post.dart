@@ -4,7 +4,7 @@ part 'post.freezed.dart';
 part 'post.g.dart';
 
 @freezed
-class Post with _$Post {
+abstract class Post with _$Post {
   factory Post({
     int? userId,
     required int id,

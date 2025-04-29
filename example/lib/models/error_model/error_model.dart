@@ -7,8 +7,9 @@ import 'content.dart';
 part 'error_model.freezed.dart';
 part 'error_model.g.dart';
 
+// extends ApiError
 @freezed
-class ErrorModel extends ApiError with _$ErrorModel {
+abstract class ErrorModel with _$ErrorModel implements ApiError {
   factory ErrorModel({
     @Default('An error occured') String message,
     @Default(400) int code,

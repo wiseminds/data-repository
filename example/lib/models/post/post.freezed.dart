@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,89 +10,64 @@ part of 'post.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
-
-Post _$PostFromJson(Map<String, dynamic> json) {
-  return _Post.fromJson(json);
-}
 
 /// @nodoc
 mixin _$Post {
-  int? get userId => throw _privateConstructorUsedError;
-  int get id => throw _privateConstructorUsedError;
-  String get title => throw _privateConstructorUsedError;
-  String? get body => throw _privateConstructorUsedError;
+  int? get userId;
+  int get id;
+  String get title;
+  String? get body;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $PostCopyWith<Post> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PostCopyWith<$Res> {
-  factory $PostCopyWith(Post value, $Res Function(Post) then) =
-      _$PostCopyWithImpl<$Res, Post>;
-  @useResult
-  $Res call({int? userId, int id, String title, String? body});
-}
-
-/// @nodoc
-class _$PostCopyWithImpl<$Res, $Val extends Post>
-    implements $PostCopyWith<$Res> {
-  _$PostCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $PostCopyWith<Post> get copyWith =>
+      _$PostCopyWithImpl<Post>(this as Post, _$identity);
+
+  /// Serializes this Post to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? userId = freezed,
-    Object? id = null,
-    Object? title = null,
-    Object? body = freezed,
-  }) {
-    return _then(_value.copyWith(
-      userId: freezed == userId
-          ? _value.userId
-          : userId // ignore: cast_nullable_to_non_nullable
-              as int?,
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      title: null == title
-          ? _value.title
-          : title // ignore: cast_nullable_to_non_nullable
-              as String,
-      body: freezed == body
-          ? _value.body
-          : body // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is Post &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.body, body) || other.body == body));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, userId, id, title, body);
+
+  @override
+  String toString() {
+    return 'Post(userId: $userId, id: $id, title: $title, body: $body)';
   }
 }
 
 /// @nodoc
-abstract class _$$_PostCopyWith<$Res> implements $PostCopyWith<$Res> {
-  factory _$$_PostCopyWith(_$_Post value, $Res Function(_$_Post) then) =
-      __$$_PostCopyWithImpl<$Res>;
-  @override
+abstract mixin class $PostCopyWith<$Res> {
+  factory $PostCopyWith(Post value, $Res Function(Post) _then) =
+      _$PostCopyWithImpl;
   @useResult
   $Res call({int? userId, int id, String title, String? body});
 }
 
 /// @nodoc
-class __$$_PostCopyWithImpl<$Res> extends _$PostCopyWithImpl<$Res, _$_Post>
-    implements _$$_PostCopyWith<$Res> {
-  __$$_PostCopyWithImpl(_$_Post _value, $Res Function(_$_Post) _then)
-      : super(_value, _then);
+class _$PostCopyWithImpl<$Res> implements $PostCopyWith<$Res> {
+  _$PostCopyWithImpl(this._self, this._then);
 
+  final Post _self;
+  final $Res Function(Post) _then;
+
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -100,21 +76,21 @@ class __$$_PostCopyWithImpl<$Res> extends _$PostCopyWithImpl<$Res, _$_Post>
     Object? title = null,
     Object? body = freezed,
   }) {
-    return _then(_$_Post(
+    return _then(_self.copyWith(
       userId: freezed == userId
-          ? _value.userId
+          ? _self.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as int?,
       id: null == id
-          ? _value.id
+          ? _self.id
           : id // ignore: cast_nullable_to_non_nullable
               as int,
       title: null == title
-          ? _value.title
+          ? _self.title
           : title // ignore: cast_nullable_to_non_nullable
               as String,
       body: freezed == body
-          ? _value.body
+          ? _self.body
           : body // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
@@ -123,10 +99,9 @@ class __$$_PostCopyWithImpl<$Res> extends _$PostCopyWithImpl<$Res, _$_Post>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Post implements _Post {
-  _$_Post({this.userId, required this.id, required this.title, this.body});
-
-  factory _$_Post.fromJson(Map<String, dynamic> json) => _$$_PostFromJson(json);
+class _Post implements Post {
+  _Post({this.userId, required this.id, required this.title, this.body});
+  factory _Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
 
   @override
   final int? userId;
@@ -137,58 +112,87 @@ class _$_Post implements _Post {
   @override
   final String? body;
 
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'Post(userId: $userId, id: $id, title: $title, body: $body)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$PostCopyWith<_Post> get copyWith =>
+      __$PostCopyWithImpl<_Post>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$PostToJson(
+      this,
+    );
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Post &&
+            other is _Post &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.body, body) || other.body == body));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, userId, id, title, body);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$_PostCopyWith<_$_Post> get copyWith =>
-      __$$_PostCopyWithImpl<_$_Post>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$_PostToJson(
-      this,
-    );
+  String toString() {
+    return 'Post(userId: $userId, id: $id, title: $title, body: $body)';
   }
 }
 
-abstract class _Post implements Post {
-  factory _Post(
-      {final int? userId,
-      required final int id,
-      required final String title,
-      final String? body}) = _$_Post;
-
-  factory _Post.fromJson(Map<String, dynamic> json) = _$_Post.fromJson;
-
+/// @nodoc
+abstract mixin class _$PostCopyWith<$Res> implements $PostCopyWith<$Res> {
+  factory _$PostCopyWith(_Post value, $Res Function(_Post) _then) =
+      __$PostCopyWithImpl;
   @override
-  int? get userId;
-  @override
-  int get id;
-  @override
-  String get title;
-  @override
-  String? get body;
-  @override
-  @JsonKey(ignore: true)
-  _$$_PostCopyWith<_$_Post> get copyWith => throw _privateConstructorUsedError;
+  @useResult
+  $Res call({int? userId, int id, String title, String? body});
 }
+
+/// @nodoc
+class __$PostCopyWithImpl<$Res> implements _$PostCopyWith<$Res> {
+  __$PostCopyWithImpl(this._self, this._then);
+
+  final _Post _self;
+  final $Res Function(_Post) _then;
+
+  /// Create a copy of Post
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? userId = freezed,
+    Object? id = null,
+    Object? title = null,
+    Object? body = freezed,
+  }) {
+    return _then(_Post(
+      userId: freezed == userId
+          ? _self.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      id: null == id
+          ? _self.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
+      title: null == title
+          ? _self.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      body: freezed == body
+          ? _self.body
+          : body // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+// dart format on

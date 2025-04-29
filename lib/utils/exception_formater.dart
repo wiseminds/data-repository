@@ -16,10 +16,10 @@ mixin ExceptionFormater {
     // if (kDebugMode) print(error is ApiError);
     if (kDebugMode) print('formatErrorMessage, ${error.runtimeType}');
     switch (error.runtimeType.toString()) {
-      case ApiError:
+      case 'ApiError':
         message = error.message ?? defaultErrorMessage;
         code = error.code.toInt() ?? 1000;
-        break;  
+        break;
       case 'SocketException':
       case 'HttpException':
       case 'RedirectException':

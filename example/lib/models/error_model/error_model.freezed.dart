@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,89 +10,59 @@ part of 'error_model.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
-
-ErrorModel _$ErrorModelFromJson(Map<String, dynamic> json) {
-  return _ErrorModel.fromJson(json);
-}
 
 /// @nodoc
 mixin _$ErrorModel {
-  String get message => throw _privateConstructorUsedError;
-  int get code => throw _privateConstructorUsedError;
-  Map<String, Content>? get errors => throw _privateConstructorUsedError;
+  String get message;
+  int get code;
+  Map<String, Content>? get errors;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+  /// Create a copy of ErrorModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
   $ErrorModelCopyWith<ErrorModel> get copyWith =>
-      throw _privateConstructorUsedError;
-}
+      _$ErrorModelCopyWithImpl<ErrorModel>(this as ErrorModel, _$identity);
 
-/// @nodoc
-abstract class $ErrorModelCopyWith<$Res> {
-  factory $ErrorModelCopyWith(
-          ErrorModel value, $Res Function(ErrorModel) then) =
-      _$ErrorModelCopyWithImpl<$Res, ErrorModel>;
-  @useResult
-  $Res call({String message, int code, Map<String, Content>? errors});
-}
+  /// Serializes this ErrorModel to a JSON map.
+  Map<String, dynamic> toJson();
 
-/// @nodoc
-class _$ErrorModelCopyWithImpl<$Res, $Val extends ErrorModel>
-    implements $ErrorModelCopyWith<$Res> {
-  _$ErrorModelCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
   @override
-  $Res call({
-    Object? message = null,
-    Object? code = null,
-    Object? errors = freezed,
-  }) {
-    return _then(_value.copyWith(
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-      code: null == code
-          ? _value.code
-          : code // ignore: cast_nullable_to_non_nullable
-              as int,
-      errors: freezed == errors
-          ? _value.errors
-          : errors // ignore: cast_nullable_to_non_nullable
-              as Map<String, Content>?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is ErrorModel &&
+            (identical(other.message, message) || other.message == message) &&
+            (identical(other.code, code) || other.code == code) &&
+            const DeepCollectionEquality().equals(other.errors, errors));
   }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, message, code, const DeepCollectionEquality().hash(errors));
 }
 
 /// @nodoc
-abstract class _$$_ErrorModelCopyWith<$Res>
-    implements $ErrorModelCopyWith<$Res> {
-  factory _$$_ErrorModelCopyWith(
-          _$_ErrorModel value, $Res Function(_$_ErrorModel) then) =
-      __$$_ErrorModelCopyWithImpl<$Res>;
-  @override
+abstract mixin class $ErrorModelCopyWith<$Res> {
+  factory $ErrorModelCopyWith(
+          ErrorModel value, $Res Function(ErrorModel) _then) =
+      _$ErrorModelCopyWithImpl;
   @useResult
   $Res call({String message, int code, Map<String, Content>? errors});
 }
 
 /// @nodoc
-class __$$_ErrorModelCopyWithImpl<$Res>
-    extends _$ErrorModelCopyWithImpl<$Res, _$_ErrorModel>
-    implements _$$_ErrorModelCopyWith<$Res> {
-  __$$_ErrorModelCopyWithImpl(
-      _$_ErrorModel _value, $Res Function(_$_ErrorModel) _then)
-      : super(_value, _then);
+class _$ErrorModelCopyWithImpl<$Res> implements $ErrorModelCopyWith<$Res> {
+  _$ErrorModelCopyWithImpl(this._self, this._then);
 
+  final ErrorModel _self;
+  final $Res Function(ErrorModel) _then;
+
+  /// Create a copy of ErrorModel
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -99,17 +70,17 @@ class __$$_ErrorModelCopyWithImpl<$Res>
     Object? code = null,
     Object? errors = freezed,
   }) {
-    return _then(_$_ErrorModel(
+    return _then(_self.copyWith(
       message: null == message
-          ? _value.message
+          ? _self.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
       code: null == code
-          ? _value.code
+          ? _self.code
           : code // ignore: cast_nullable_to_non_nullable
               as int,
       errors: freezed == errors
-          ? _value._errors
+          ? _self.errors
           : errors // ignore: cast_nullable_to_non_nullable
               as Map<String, Content>?,
     ));
@@ -118,15 +89,14 @@ class __$$_ErrorModelCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_ErrorModel implements _ErrorModel {
-  _$_ErrorModel(
+class _ErrorModel implements ErrorModel {
+  _ErrorModel(
       {this.message = 'An error occured',
       this.code = 400,
       final Map<String, Content>? errors})
       : _errors = errors;
-
-  factory _$_ErrorModel.fromJson(Map<String, dynamic> json) =>
-      _$$_ErrorModelFromJson(json);
+  factory _ErrorModel.fromJson(Map<String, dynamic> json) =>
+      _$ErrorModelFromJson(json);
 
   @override
   @JsonKey()
@@ -144,57 +114,79 @@ class _$_ErrorModel implements _ErrorModel {
     return EqualUnmodifiableMapView(value);
   }
 
+  /// Create a copy of ErrorModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'ErrorModel(message: $message, code: $code, errors: $errors)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$ErrorModelCopyWith<_ErrorModel> get copyWith =>
+      __$ErrorModelCopyWithImpl<_ErrorModel>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$ErrorModelToJson(
+      this,
+    );
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ErrorModel &&
+            other is _ErrorModel &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.code, code) || other.code == code) &&
             const DeepCollectionEquality().equals(other._errors, _errors));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType, message, code, const DeepCollectionEquality().hash(_errors));
+}
 
-  @JsonKey(ignore: true)
+/// @nodoc
+abstract mixin class _$ErrorModelCopyWith<$Res>
+    implements $ErrorModelCopyWith<$Res> {
+  factory _$ErrorModelCopyWith(
+          _ErrorModel value, $Res Function(_ErrorModel) _then) =
+      __$ErrorModelCopyWithImpl;
+  @override
+  @useResult
+  $Res call({String message, int code, Map<String, Content>? errors});
+}
+
+/// @nodoc
+class __$ErrorModelCopyWithImpl<$Res> implements _$ErrorModelCopyWith<$Res> {
+  __$ErrorModelCopyWithImpl(this._self, this._then);
+
+  final _ErrorModel _self;
+  final $Res Function(_ErrorModel) _then;
+
+  /// Create a copy of ErrorModel
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  _$$_ErrorModelCopyWith<_$_ErrorModel> get copyWith =>
-      __$$_ErrorModelCopyWithImpl<_$_ErrorModel>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$_ErrorModelToJson(
-      this,
-    );
+  $Res call({
+    Object? message = null,
+    Object? code = null,
+    Object? errors = freezed,
+  }) {
+    return _then(_ErrorModel(
+      message: null == message
+          ? _self.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+      code: null == code
+          ? _self.code
+          : code // ignore: cast_nullable_to_non_nullable
+              as int,
+      errors: freezed == errors
+          ? _self._errors
+          : errors // ignore: cast_nullable_to_non_nullable
+              as Map<String, Content>?,
+    ));
   }
 }
 
-abstract class _ErrorModel implements ErrorModel {
-  factory _ErrorModel(
-      {final String message,
-      final int code,
-      final Map<String, Content>? errors}) = _$_ErrorModel;
-
-  factory _ErrorModel.fromJson(Map<String, dynamic> json) =
-      _$_ErrorModel.fromJson;
-
-  @override
-  String get message;
-  @override
-  int get code;
-  @override
-  Map<String, Content>? get errors;
-  @override
-  @JsonKey(ignore: true)
-  _$$_ErrorModelCopyWith<_$_ErrorModel> get copyWith =>
-      throw _privateConstructorUsedError;
-}
+// dart format on

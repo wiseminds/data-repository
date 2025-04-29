@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
@@ -9,101 +10,57 @@ part of 'pagination.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
-
-Pagination _$PaginationFromJson(Map<String, dynamic> json) {
-  return _Pagination.fromJson(json);
-}
 
 /// @nodoc
 mixin _$Pagination {
-  int get pages => throw _privateConstructorUsedError;
-  int get total => throw _privateConstructorUsedError;
-  int get page => throw _privateConstructorUsedError;
-  int get limit => throw _privateConstructorUsedError;
-  String? get order => throw _privateConstructorUsedError;
-  String? get query => throw _privateConstructorUsedError;
+  int get pages;
+  int get total;
+  int get page;
+  int get limit;
+  String? get order;
+  String? get query;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $PaginationCopyWith<Pagination> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $PaginationCopyWith<$Res> {
-  factory $PaginationCopyWith(
-          Pagination value, $Res Function(Pagination) then) =
-      _$PaginationCopyWithImpl<$Res, Pagination>;
-  @useResult
-  $Res call(
-      {int pages,
-      int total,
-      int page,
-      int limit,
-      String? order,
-      String? query});
-}
-
-/// @nodoc
-class _$PaginationCopyWithImpl<$Res, $Val extends Pagination>
-    implements $PaginationCopyWith<$Res> {
-  _$PaginationCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of Pagination
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $PaginationCopyWith<Pagination> get copyWith =>
+      _$PaginationCopyWithImpl<Pagination>(this as Pagination, _$identity);
+
+  /// Serializes this Pagination to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? pages = null,
-    Object? total = null,
-    Object? page = null,
-    Object? limit = null,
-    Object? order = freezed,
-    Object? query = freezed,
-  }) {
-    return _then(_value.copyWith(
-      pages: null == pages
-          ? _value.pages
-          : pages // ignore: cast_nullable_to_non_nullable
-              as int,
-      total: null == total
-          ? _value.total
-          : total // ignore: cast_nullable_to_non_nullable
-              as int,
-      page: null == page
-          ? _value.page
-          : page // ignore: cast_nullable_to_non_nullable
-              as int,
-      limit: null == limit
-          ? _value.limit
-          : limit // ignore: cast_nullable_to_non_nullable
-              as int,
-      order: freezed == order
-          ? _value.order
-          : order // ignore: cast_nullable_to_non_nullable
-              as String?,
-      query: freezed == query
-          ? _value.query
-          : query // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is Pagination &&
+            (identical(other.pages, pages) || other.pages == pages) &&
+            (identical(other.total, total) || other.total == total) &&
+            (identical(other.page, page) || other.page == page) &&
+            (identical(other.limit, limit) || other.limit == limit) &&
+            (identical(other.order, order) || other.order == order) &&
+            (identical(other.query, query) || other.query == query));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, pages, total, page, limit, order, query);
+
+  @override
+  String toString() {
+    return 'Pagination(pages: $pages, total: $total, page: $page, limit: $limit, order: $order, query: $query)';
   }
 }
 
 /// @nodoc
-abstract class _$$_PaginationCopyWith<$Res>
-    implements $PaginationCopyWith<$Res> {
-  factory _$$_PaginationCopyWith(
-          _$_Pagination value, $Res Function(_$_Pagination) then) =
-      __$$_PaginationCopyWithImpl<$Res>;
-  @override
+abstract mixin class $PaginationCopyWith<$Res> {
+  factory $PaginationCopyWith(
+          Pagination value, $Res Function(Pagination) _then) =
+      _$PaginationCopyWithImpl;
   @useResult
   $Res call(
       {int pages,
@@ -115,13 +72,14 @@ abstract class _$$_PaginationCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_PaginationCopyWithImpl<$Res>
-    extends _$PaginationCopyWithImpl<$Res, _$_Pagination>
-    implements _$$_PaginationCopyWith<$Res> {
-  __$$_PaginationCopyWithImpl(
-      _$_Pagination _value, $Res Function(_$_Pagination) _then)
-      : super(_value, _then);
+class _$PaginationCopyWithImpl<$Res> implements $PaginationCopyWith<$Res> {
+  _$PaginationCopyWithImpl(this._self, this._then);
 
+  final Pagination _self;
+  final $Res Function(Pagination) _then;
+
+  /// Create a copy of Pagination
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -132,29 +90,29 @@ class __$$_PaginationCopyWithImpl<$Res>
     Object? order = freezed,
     Object? query = freezed,
   }) {
-    return _then(_$_Pagination(
+    return _then(_self.copyWith(
       pages: null == pages
-          ? _value.pages
+          ? _self.pages
           : pages // ignore: cast_nullable_to_non_nullable
               as int,
       total: null == total
-          ? _value.total
+          ? _self.total
           : total // ignore: cast_nullable_to_non_nullable
               as int,
       page: null == page
-          ? _value.page
+          ? _self.page
           : page // ignore: cast_nullable_to_non_nullable
               as int,
       limit: null == limit
-          ? _value.limit
+          ? _self.limit
           : limit // ignore: cast_nullable_to_non_nullable
               as int,
       order: freezed == order
-          ? _value.order
+          ? _self.order
           : order // ignore: cast_nullable_to_non_nullable
               as String?,
       query: freezed == query
-          ? _value.query
+          ? _self.query
           : query // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
@@ -163,17 +121,16 @@ class __$$_PaginationCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Pagination implements _Pagination {
-  _$_Pagination(
+class _Pagination implements Pagination {
+  _Pagination(
       {this.pages = 1,
       this.total = 0,
       this.page = 1,
       this.limit = 10,
       this.order,
       this.query});
-
-  factory _$_Pagination.fromJson(Map<String, dynamic> json) =>
-      _$$_PaginationFromJson(json);
+  factory _Pagination.fromJson(Map<String, dynamic> json) =>
+      _$PaginationFromJson(json);
 
   @override
   @JsonKey()
@@ -192,16 +149,26 @@ class _$_Pagination implements _Pagination {
   @override
   final String? query;
 
+  /// Create a copy of Pagination
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'Pagination(pages: $pages, total: $total, page: $page, limit: $limit, order: $order, query: $query)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$PaginationCopyWith<_Pagination> get copyWith =>
+      __$PaginationCopyWithImpl<_Pagination>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$PaginationToJson(
+      this,
+    );
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Pagination &&
+            other is _Pagination &&
             (identical(other.pages, pages) || other.pages == pages) &&
             (identical(other.total, total) || other.total == total) &&
             (identical(other.page, page) || other.page == page) &&
@@ -210,51 +177,80 @@ class _$_Pagination implements _Pagination {
             (identical(other.query, query) || other.query == query));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, pages, total, page, limit, order, query);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$_PaginationCopyWith<_$_Pagination> get copyWith =>
-      __$$_PaginationCopyWithImpl<_$_Pagination>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$_PaginationToJson(
-      this,
-    );
+  String toString() {
+    return 'Pagination(pages: $pages, total: $total, page: $page, limit: $limit, order: $order, query: $query)';
   }
 }
 
-abstract class _Pagination implements Pagination {
-  factory _Pagination(
-      {final int pages,
-      final int total,
-      final int page,
-      final int limit,
-      final String? order,
-      final String? query}) = _$_Pagination;
-
-  factory _Pagination.fromJson(Map<String, dynamic> json) =
-      _$_Pagination.fromJson;
-
+/// @nodoc
+abstract mixin class _$PaginationCopyWith<$Res>
+    implements $PaginationCopyWith<$Res> {
+  factory _$PaginationCopyWith(
+          _Pagination value, $Res Function(_Pagination) _then) =
+      __$PaginationCopyWithImpl;
   @override
-  int get pages;
-  @override
-  int get total;
-  @override
-  int get page;
-  @override
-  int get limit;
-  @override
-  String? get order;
-  @override
-  String? get query;
-  @override
-  @JsonKey(ignore: true)
-  _$$_PaginationCopyWith<_$_Pagination> get copyWith =>
-      throw _privateConstructorUsedError;
+  @useResult
+  $Res call(
+      {int pages,
+      int total,
+      int page,
+      int limit,
+      String? order,
+      String? query});
 }
+
+/// @nodoc
+class __$PaginationCopyWithImpl<$Res> implements _$PaginationCopyWith<$Res> {
+  __$PaginationCopyWithImpl(this._self, this._then);
+
+  final _Pagination _self;
+  final $Res Function(_Pagination) _then;
+
+  /// Create a copy of Pagination
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? pages = null,
+    Object? total = null,
+    Object? page = null,
+    Object? limit = null,
+    Object? order = freezed,
+    Object? query = freezed,
+  }) {
+    return _then(_Pagination(
+      pages: null == pages
+          ? _self.pages
+          : pages // ignore: cast_nullable_to_non_nullable
+              as int,
+      total: null == total
+          ? _self.total
+          : total // ignore: cast_nullable_to_non_nullable
+              as int,
+      page: null == page
+          ? _self.page
+          : page // ignore: cast_nullable_to_non_nullable
+              as int,
+      limit: null == limit
+          ? _self.limit
+          : limit // ignore: cast_nullable_to_non_nullable
+              as int,
+      order: freezed == order
+          ? _self.order
+          : order // ignore: cast_nullable_to_non_nullable
+              as String?,
+      query: freezed == query
+          ? _self.query
+          : query // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+// dart format on

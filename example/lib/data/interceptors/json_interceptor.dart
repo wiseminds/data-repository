@@ -125,9 +125,9 @@ class JsonInterceptor<ErrorType extends ApiError> implements ApiInterceptor {
       final body = _decode<InnerType>(_getBody(jsn, response.request.dataKey));
       if (kDebugMode) print(body?.toString());
       return response.copyWith(body: body, pagination: pagination);
-    } catch (e, _) {
+    } catch (e, stackTrace) {
       print(e);
-      print('error, $_');
+      print('error, $stackTrace');
       return response.copyWith(body: null, pagination: pagination);
     }
     // pagination: pagination);
