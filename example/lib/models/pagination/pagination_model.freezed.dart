@@ -4,7 +4,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'pagination.dart';
+part of 'pagination_model.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -12,9 +12,12 @@ part of 'pagination.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
+PaginationModel _$PaginationModelFromJson(Map<String, dynamic> json) {
+  return _Pagination.fromJson(json);
+}
 
 /// @nodoc
-mixin _$Pagination {
+mixin _$PaginationModel {
   int get pages;
   int get total;
   int get page;
@@ -22,21 +25,22 @@ mixin _$Pagination {
   String? get order;
   String? get query;
 
-  /// Create a copy of Pagination
+  /// Create a copy of PaginationModel
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  $PaginationCopyWith<Pagination> get copyWith =>
-      _$PaginationCopyWithImpl<Pagination>(this as Pagination, _$identity);
+  $PaginationModelCopyWith<PaginationModel> get copyWith =>
+      _$PaginationModelCopyWithImpl<PaginationModel>(
+          this as PaginationModel, _$identity);
 
-  /// Serializes this Pagination to a JSON map.
+  /// Serializes this PaginationModel to a JSON map.
   Map<String, dynamic> toJson();
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is Pagination &&
+            other is PaginationModel &&
             (identical(other.pages, pages) || other.pages == pages) &&
             (identical(other.total, total) || other.total == total) &&
             (identical(other.page, page) || other.page == page) &&
@@ -52,15 +56,15 @@ mixin _$Pagination {
 
   @override
   String toString() {
-    return 'Pagination(pages: $pages, total: $total, page: $page, limit: $limit, order: $order, query: $query)';
+    return 'PaginationModel(pages: $pages, total: $total, page: $page, limit: $limit, order: $order, query: $query)';
   }
 }
 
 /// @nodoc
-abstract mixin class $PaginationCopyWith<$Res> {
-  factory $PaginationCopyWith(
-          Pagination value, $Res Function(Pagination) _then) =
-      _$PaginationCopyWithImpl;
+abstract mixin class $PaginationModelCopyWith<$Res> {
+  factory $PaginationModelCopyWith(
+          PaginationModel value, $Res Function(PaginationModel) _then) =
+      _$PaginationModelCopyWithImpl;
   @useResult
   $Res call(
       {int pages,
@@ -72,13 +76,14 @@ abstract mixin class $PaginationCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$PaginationCopyWithImpl<$Res> implements $PaginationCopyWith<$Res> {
-  _$PaginationCopyWithImpl(this._self, this._then);
+class _$PaginationModelCopyWithImpl<$Res>
+    implements $PaginationModelCopyWith<$Res> {
+  _$PaginationModelCopyWithImpl(this._self, this._then);
 
-  final Pagination _self;
-  final $Res Function(Pagination) _then;
+  final PaginationModel _self;
+  final $Res Function(PaginationModel) _then;
 
-  /// Create a copy of Pagination
+  /// Create a copy of PaginationModel
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -121,7 +126,7 @@ class _$PaginationCopyWithImpl<$Res> implements $PaginationCopyWith<$Res> {
 
 /// @nodoc
 @JsonSerializable()
-class _Pagination implements Pagination {
+class _Pagination implements PaginationModel {
   _Pagination(
       {this.pages = 1,
       this.total = 0,
@@ -149,7 +154,7 @@ class _Pagination implements Pagination {
   @override
   final String? query;
 
-  /// Create a copy of Pagination
+  /// Create a copy of PaginationModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -184,13 +189,13 @@ class _Pagination implements Pagination {
 
   @override
   String toString() {
-    return 'Pagination(pages: $pages, total: $total, page: $page, limit: $limit, order: $order, query: $query)';
+    return 'PaginationModel(pages: $pages, total: $total, page: $page, limit: $limit, order: $order, query: $query)';
   }
 }
 
 /// @nodoc
 abstract mixin class _$PaginationCopyWith<$Res>
-    implements $PaginationCopyWith<$Res> {
+    implements $PaginationModelCopyWith<$Res> {
   factory _$PaginationCopyWith(
           _Pagination value, $Res Function(_Pagination) _then) =
       __$PaginationCopyWithImpl;
@@ -212,7 +217,7 @@ class __$PaginationCopyWithImpl<$Res> implements _$PaginationCopyWith<$Res> {
   final _Pagination _self;
   final $Res Function(_Pagination) _then;
 
-  /// Create a copy of Pagination
+  /// Create a copy of PaginationModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')

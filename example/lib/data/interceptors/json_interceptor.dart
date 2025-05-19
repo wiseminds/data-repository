@@ -2,9 +2,9 @@
 
 import 'dart:convert';
 
-// import 'package:common/models/error_model.dart';
-import 'package:example/models/pagination/pagination.dart' as m;
 import 'package:data_repository/data_repository.dart';
+// import 'package:common/models/error_model.dart';
+import 'package:example/models/pagination/pagination_model.dart';
 import 'package:flutter/foundation.dart';
 
 abstract class ToJson {
@@ -118,7 +118,7 @@ class JsonInterceptor<ErrorType extends ApiError> implements ApiInterceptor {
     if (kDebugMode) print('in convert response ${jsn.runtimeType}, $jsn');
 
     if (response.request.hasPagination) {
-      pagination = _decode<m.Pagination>(_getBody(jsn));
+      pagination = _decode<PaginationModel>(_getBody(jsn));
     }
 
     try {

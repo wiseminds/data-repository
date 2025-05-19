@@ -5,6 +5,7 @@ import 'package:data_repository/models/api_error.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 
 mixin ExceptionFormater {
   static const networkError = 7000;
@@ -57,6 +58,11 @@ mixin ExceptionFormater {
         code = 7007;
         break;
 
+      case 'ClientException':
+        message = 'Client exception occurred, could not connect to the server';
+        code = 70012;
+        break;
+
       case 'TimeoutException':
         message = 'Connection Timed out please check your internet connection';
         code = 7009;
@@ -75,6 +81,7 @@ mixin ExceptionFormater {
 
   static Map<String, Exception> get errorToObject {
     return {
+      'ClientException': ClientException(''),
       'SocketException': const SocketException(''),
       'HttpException': const HttpException(''),
       'RedirectException': const RedirectException('', []),

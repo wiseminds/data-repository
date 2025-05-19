@@ -1,12 +1,12 @@
 import 'package:data_repository/data_repository.dart' as d;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'pagination.freezed.dart';
-part 'pagination.g.dart';
+part 'pagination_model.freezed.dart';
+part 'pagination_model.g.dart';
 
 @freezed
-abstract class Pagination with _$Pagination implements d.Pagination {
-  factory Pagination(
+abstract  class PaginationModel with _$PaginationModel implements d.Pagination {
+  factory PaginationModel(
       {@Default(1) int pages,
       @Default(0) int total,
       @Default(1) int page,
@@ -14,6 +14,6 @@ abstract class Pagination with _$Pagination implements d.Pagination {
       String? order,
       String? query}) = _Pagination;
 
-  factory Pagination.fromJson(Map<String, dynamic> json) =>
+  factory PaginationModel.fromJson(Map<String, dynamic> json) =>
       _$PaginationFromJson(json);
 }

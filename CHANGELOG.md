@@ -1,3 +1,5 @@
+## 0.5.1
+* added client exception support
 ## 0.5.0
 * filter out network error correctly
 * Updated packages

@@ -6,7 +6,7 @@ extension PaginationExt on Pagination {
   bool get hasPrevious => page > 1;
 }
 
-class Pagination {
+abstract class Pagination {
   final int total, limit, pages, page;
   final String? order, query;
 
