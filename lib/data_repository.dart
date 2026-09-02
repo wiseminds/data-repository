@@ -91,6 +91,7 @@ abstract class DataRepository with ExceptionFormatter, CacheMixin {
 
       final decoded = JsonUtils.decode(data.toString());
       final response = await ApiResponse<ResultType, Item>(
+        // ignore: deprecated_member_use_from_same_package
         request: request.copyWith(dataKey: '', nestedKey: ''),
         bodyString: decoded,
         headers: const {},

@@ -69,6 +69,15 @@
   (`'data.pages[0].items'`) and backslash-escaped literal dots. A single key with no dots behaves
   exactly as before, so existing values need no change.
 * `JsonPath` is exported for direct use and testing.
+* **`paginationKey`**, a dotted path to the object carrying the pagination fields, defaulting to the
+  root. It takes over the one job `nestedKey` still had once `dataKey` became a full path.
+
+### Deprecated
+* **`ApiRequest.nestedKey`.** It existed only because `dataKey` could resolve a single key, so an
+  envelope needed a second anchor. With both now dotted paths,
+  `nestedKey: 'result', dataKey: 'data'` is written `dataKey: 'result.data', paginationKey: 'result'`.
+  It continues to work unchanged — including scoping `dataKey` relative to it — and will be removed
+  in a future release.
 
 ### Changed
 * `ApiRequest.build` and `ApiResponse.resolve` are now `Future`s, following the async interceptors.

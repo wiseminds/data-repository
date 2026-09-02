@@ -134,18 +134,27 @@ dataKey: r'meta.user\.name'        // backslash escapes a literal dot
 dataKey: ''                        // the body itself (default)
 ```
 
-Two anchors exist because pagination is read *between* them:
+When a paginated response wraps its payload, `paginationKey` says where the
+pagination fields live — both paths are absolute:
 
 ```json
-{ "result": {                    // nestedKey: 'result'
-    "page": 1, "pages": 5,       // pagination is read at this level
-    "data": [ ... ] } }          // dataKey: 'data'
+{ "result": {                    // paginationKey: 'result'
+    "page": 1, "pages": 5,
+    "data": [ ... ] } }          // dataKey: 'result.data'
 ```
 
-`dataKey` is resolved relative to `nestedKey`, and each may be multi-level.
+`paginationKey` defaults to the root, which suits the common
+`{"page": 1, "pages": 5, "data": [...]}` shape.
+
 A path that does not resolve yields a null body and logs which segment failed
 via `ApiConfig().logger`, so a typo or a schema change surfaces instead of
 silently decoding the wrong object.
+
+> **`nestedKey` is deprecated.** It existed only because `dataKey` could reach
+> one level, so an envelope needed its own anchor. Now that both are dotted
+> paths, `nestedKey: 'result', dataKey: 'data'` is written
+> `dataKey: 'result.data', paginationKey: 'result'`. It still works and still
+> scopes `dataKey` while set.
 
 `ErrorDescription.key` is a path too, defaulting to the empty path — the error
 body is usually the response body:

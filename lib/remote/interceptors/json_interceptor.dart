@@ -34,14 +34,23 @@ class JsonInterceptor<ErrorType> extends ApiInterceptor {
   ) {
     final decoded = _tryDecodeJson(response.bodyString);
 
-    // The envelope is where pagination lives; the data path is resolved
-    // relative to it, so the two anchors stay independent.
-    final envelope = _resolve(decoded, response.request.nestedKey, 'nestedKey');
+    // ignore: deprecated_member_use_from_same_package
+    final nestedKey = response.request.nestedKey;
+    final hasEnvelope = nestedKey != null && nestedKey.isNotEmpty;
+
+    // Legacy: while nestedKey is set it scopes everything beneath it. Without
+    // it, dataKey and paginationKey are both absolute from the root.
+    final envelope = hasEnvelope
+        ? _resolve(decoded, nestedKey, 'nestedKey')
+        : decoded;
 
     Pagination? pagination;
     if (response.request.hasPagination && paginationFactory != null) {
-      if (envelope is Map<String, dynamic>) {
-        pagination = paginationFactory!(envelope);
+      final source = hasEnvelope
+          ? envelope
+          : _resolve(decoded, response.request.paginationKey, 'paginationKey');
+      if (source is Map<String, dynamic>) {
+        pagination = paginationFactory!(source);
       }
     }
 

@@ -17,7 +17,7 @@ class JsonPathResult {
 
 /// A dotted path into a decoded JSON tree.
 ///
-/// Used by `dataKey`, `nestedKey` and `ErrorDescription.key` so a payload can
+/// Used by `dataKey`, `paginationKey` and `ErrorDescription.key` so a payload can
 /// be reached at any depth rather than one level:
 ///
 /// ```dart

@@ -12,28 +12,45 @@ class ApiRequest<ResponseType, InnerType> {
   final String requestId;
   final String? method;
 
-  /// Dotted path to the envelope that wraps the payload, resolved before
-  /// [dataKey] and before pagination is read.
+  /// Dotted path to the envelope that scopes [dataKey] and pagination.
   ///
-  /// Two anchors exist because pagination sits *between* them:
+  /// Superseded now that [dataKey] accepts a full dotted path. What used to
+  /// need two relative anchors is now two absolute ones:
   ///
-  /// ```json
-  /// { "result": {            // nestedKey: 'result'
-  ///     "page": 1,           // pagination is read here
-  ///     "data": [ ... ] } }  // dataKey: 'data'
+  /// ```dart
+  /// // before
+  /// nestedKey: 'result', dataKey: 'data', hasPagination: true
+  ///
+  /// // after
+  /// dataKey: 'result.data', paginationKey: 'result', hasPagination: true
   /// ```
   ///
-  /// Any depth is supported: `nestedKey: 'response.payload.result'`.
+  /// While set, it keeps its original meaning: [dataKey] and the pagination
+  /// envelope are both resolved relative to it.
+  @Deprecated(
+    'Use an absolute dotted dataKey, plus paginationKey to locate the '
+    'pagination envelope. nestedKey will be removed in a future release.',
+  )
   final String? nestedKey;
   final String path;
   final int timeout;
 
-  /// Dotted path to the payload, resolved relative to [nestedKey].
+  /// Dotted path to the payload, resolved from the root of the body.
   ///
   /// `'data'` selects one level, `'data.items'` two, `'data.pages[0].items'`
   /// indexes a list, and `r'meta.user\.name'` escapes a literal dot. Empty —
   /// the default — means the body itself.
+  ///
+  /// Resolved relative to the deprecated `nestedKey` while that is still set.
   final String dataKey;
+
+  /// Dotted path to the object carrying the pagination fields, resolved from
+  /// the root of the body.
+  ///
+  /// Only consulted when [hasPagination] is true and the interceptor was given
+  /// a pagination factory. Defaults to the root, which suits the common shape
+  /// `{"page": 1, "pages": 5, "data": [...]}`.
+  final String paginationKey;
   final String baseUrl;
   final bool hasPagination;
   final bool? override500Error;
@@ -54,9 +71,11 @@ class ApiRequest<ResponseType, InnerType> {
     this.headers = const {},
     this.query = const {},
     this.error,
+    // ignore: deprecated_member_use_from_same_package
     this.nestedKey,
     this.method = ApiMethods.get,
     this.dataKey = '',
+    this.paginationKey = '',
     this.interceptors = const [],
     this.path = '',
     required this.baseUrl,
@@ -82,6 +101,7 @@ class ApiRequest<ResponseType, InnerType> {
     String? method,
     String? path,
     String? dataKey,
+    String? paginationKey,
     String? baseUrl,
     bool? hasPagination,
     RetryPolicy? retryPolicy,
@@ -101,6 +121,8 @@ class ApiRequest<ResponseType, InnerType> {
     query: query ?? this.query,
     method: method ?? this.method,
     dataKey: dataKey ?? this.dataKey,
+    paginationKey: paginationKey ?? this.paginationKey,
+    // ignore: deprecated_member_use_from_same_package
     nestedKey: identical(nestedKey, _unset)
         ? this.nestedKey
         : nestedKey as String?,
