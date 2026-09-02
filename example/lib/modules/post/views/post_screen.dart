@@ -1,4 +1,6 @@
 import 'package:data_repository/cache/index.dart';
+import 'package:example/dependency_injection.dart';
+import 'package:example/modules/post/repository/post_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,7 +13,9 @@ class PostScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => PostCubit(),
+        // The cubit is handed its repository from the composition root.
+        create: (context) =>
+            PostCubit(DependencyInjection.locator<PostRepository>()),
         child: Scaffold(
             bottomNavigationBar: Builder(builder: (context) {
               return context.watch<PostCubit>().state.requestDuration != null
