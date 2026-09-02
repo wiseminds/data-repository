@@ -6,8 +6,9 @@ class MockHttpApiProvider extends Mock implements ApiProvider {
   // You can override the send method to return a mock response
   @override
   Future<ApiResponse<ResultType, InnerType>> send<ResultType, InnerType>(
-    ApiRequest<ResultType, InnerType> request,
-  ) {
+    ApiRequest<ResultType, InnerType> request, [
+    RequestOptions options = const RequestOptions(),
+  ]) {
     if (kDebugMode) {
       print('handling request, ${request.path}, ${request.query}');
     }

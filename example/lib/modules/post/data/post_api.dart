@@ -1,44 +1,34 @@
-import 'package:data_repository/remote/index.dart';
+import 'package:data_repository/data_repository.dart';
 import 'package:example/constants/api_urls.dart';
-import 'package:example/data/api_client.dart';
-import 'package:example/data/interceptors/network_duration_interceptor.dart';
 import 'package:example/models/error_model/error_model.dart';
 import 'package:example/models/index.dart';
 import 'package:example/models/post/post.dart';
 
+/// Describes *what* to call. Nothing here performs I/O, so an API class is
+/// trivially unit-testable and can be reused against any [ApiProvider].
 class PostApi {
-  // ApiRequest<Post, Post> create(CreatePostDto body) {
-  //   return  ApiClient.baseRequest<Post, Post>().copyWith(
-  //       path: ApiUrls.post,
-  //       method: ApiMethods.post,
-  //       body: body.toJson,
-  //       dataKey: 'data',
-  //       error: ErrorDescription(),
-  //       interceptors: [
-  //       HeaderInterceptor({
-  //               'Authorization': 'Bearer $token',
-  //               "Content-Type": "application/json",
-  //               "Accept": "application/json",
-  //       }),
-  //         JsonInterceptor<ErrorModel>(DepartmentModels.factories),
-  //         AuthInterceptor(),
-  //       ]);
-  // }
+  final String baseUrl;
 
-  ApiRequest<List<Post>, Post> getPost() {
-    return ApiClient.baseRequest<List<Post>, Post>().copyWith(
-        path: ApiUrls.posts,
-        method: ApiMethods.get,
-        dataKey: '',
+  PostApi({required this.baseUrl});
+
+  ApiRequest<ResponseType, InnerType> _base<ResponseType, InnerType>() =>
+      ApiRequest<ResponseType, InnerType>(
+        baseUrl: baseUrl,
         error: ErrorDescription(),
         interceptors: [
-          HeaderInterceptor({
-            // 'Authorization': 'Bearer $token',
-            "Content-Type": "application/json",
-            "Accept": "application/json",
+          HeaderInterceptor(const {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
           }),
-          NetworkDurationInterceptor(),
+          // Emits through ApiConfig().logger; inert when none is set.
+          LoggingInterceptor(),
           JsonInterceptor<ErrorModel>(Models.factories),
-        ]);
-  }
+        ],
+      );
+
+  ApiRequest<List<Post>, Post> getPosts() =>
+      _base<List<Post>, Post>().copyWith(path: ApiUrls.posts);
+
+  ApiRequest<Post, Post> getPost(int id) =>
+      _base<Post, Post>().copyWith(path: '${ApiUrls.posts}/$id');
 }

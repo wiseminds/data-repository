@@ -9,6 +9,9 @@ class ApiConfig {
   /// Error code reported when an interceptor throws while resolving a response.
   static const int interceptorFailureCode = 7013;
 
+  /// Error code reported when a call is cancelled via its CancellationToken.
+  static const int cancelledCode = 7014;
+
   String defaultErrorMessage = 'Something went wrong';
 
   /// Sink for the package's diagnostic output.
