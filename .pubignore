@@ -1,0 +1,28 @@
+# NOTE: a .pubignore REPLACES .gitignore when building the published archive,
+# so the standard build artefacts have to be repeated here.
+
+# Build artefacts and tooling caches
+build/
+.dart_tool/
+.packages
+**/doc/api/
+pubspec.lock
+
+# Editor / OS noise
+.idea/
+*.iml
+.DS_Store
+
+# Consumers browsing this package on pub.dev only need the example's Dart
+# source; the generated native scaffolding is ~810K of dead weight.
+example/android/
+example/ios/
+example/linux/
+example/macos/
+example/windows/
+example/web/
+example/devtools_options.yaml
+example/pubspec.lock
+
+# Repo tooling, not part of the published package.
+.github/

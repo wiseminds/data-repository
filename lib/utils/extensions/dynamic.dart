@@ -1,20 +1,8 @@
-extension ToIntExt on dynamic {
-  int? get asInt {
-    try {
-      return this as int;
-    } catch (e) {
-      return null;
-    }
-  }
-}
-
 extension ToIntEx on Object {
+  /// Best-effort conversion to [int]; returns null when the value is not
+  /// an int and cannot be parsed as one.
   int? get asInt {
     if (this is int) return this as int;
-    try {
-      return int.tryParse(toString());
-    } catch (e) {
-      return null;
-    }
+    return int.tryParse(toString());
   }
 }

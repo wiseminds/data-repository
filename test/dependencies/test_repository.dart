@@ -8,7 +8,8 @@ class TestRepository extends DataRepository {
   final _api = TestApi();
 
   Future<ApiResponse<Map<String, dynamic>, Map<String, dynamic>>> triggerError(
-      String? errorType) async {
+    String? errorType,
+  ) async {
     return await handleRequest(_api.triggerError(errorType));
   }
 
@@ -19,11 +20,15 @@ class TestRepository extends DataRepository {
     bool invalidateCache = false,
     bool overrideTime = false,
   }) async {
-    return await handleRequest(_api.testCache(),
-        cache: CacheDescription(cacheKey,
-            lifeSpan: cacheExpirationInMilliSeconds,
-            ignoreSave: ignoreSave,
-            invalidateCache: invalidateCache,
-            overrideTime: overrideTime));
+    return await handleRequest(
+      _api.testCache(),
+      cache: CacheDescription(
+        cacheKey,
+        lifeSpan: cacheExpirationInMilliSeconds,
+        ignoreSave: ignoreSave,
+        invalidateCache: invalidateCache,
+        overrideTime: overrideTime,
+      ),
+    );
   }
 }

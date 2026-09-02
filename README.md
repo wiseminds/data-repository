@@ -1,7 +1,12 @@
-A data repository for flutter, manages both local and remote api access
+# data_repository
+
+Repository layer for Flutter: typed HTTP requests, interceptors, response
+caching, pagination and error normalisation behind one API.
+
+[![pub package](https://img.shields.io/pub/v/data_repository.svg)](https://pub.dev/packages/data_repository)
 
 ## Features
-see sample [here](https://data-repository.wiseminds.cc/#/)
+see the live sample [here](https://wiseminds.github.io/data-repository/)
 
 
 ## Getting started
@@ -35,7 +40,7 @@ class PostApi  {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
         }),
-          JsonInterceptor<ErrorModel>(DepartmentModels.factories),
+          JsonInterceptor<ErrorModel>(Models.factories),
           NetworkDurationInterceptor(),
         ]);
   }
@@ -95,6 +100,74 @@ you set the key, and the lifespan
 ```
 
 
+
+### decoding responses
+
+`JsonInterceptor` ships with the package. Give it a registry mapping each model
+type to its factory, and the type parameter names the model an error body
+decodes into:
+
+```dart
+class Models {
+  static Map<Type, JsonFactory> factories = {
+    Post: (json) => Post.fromJson(json),
+    ErrorModel: (json) => ErrorModel.fromJson(json),
+  };
+}
+
+// on the request:
+JsonInterceptor<ErrorModel>(Models.factories)
+
+// for a paginated endpoint (hasPagination: true):
+JsonInterceptor<ErrorModel>(Models.factories,
+    paginationFactory: PaginationModel.fromJson)
+```
+
+### error handling
+
+`response.error` is the normalised `ApiError` you render. When the failure came
+from an exception rather than an HTTP status, `response.cause` holds the
+original throwable, so a custom exception thrown by an interceptor stays
+recoverable:
+
+```dart
+if (!response.isSuccessful) {
+  final cause = response.cause;
+  if (cause is SessionExpiredException) return refresh(cause.refreshToken);
+  showError((response.error as ApiError).message);
+}
+```
+
+An interceptor that throws an `ApiError` carrying an HTTP status code has that
+status surfaced on the response, so this works:
+
+```dart
+// in an interceptor's onRequest
+if (tokenIsExpired) throw ApiError('Unauthorized', 401);
+
+// at the call site
+if (response.statusCode == 401) await refreshToken();
+```
+
+### logging
+
+The package is silent unless you give it somewhere to write:
+
+```dart
+ApiConfig().logger = debugPrint;   // or your own logger
+```
+
+### connection reuse and testing
+
+`HttpApiProvider` accepts an `http.Client`, which lets connections be reused
+across requests and lets tests substitute a mock transport:
+
+```dart
+RemoteRepository(HttpApiProvider(client: MockClient((request) async {
+  return http.Response('{"data": []}', 200);
+})));
+```
+
 ### interceptors
 You can define interceptors to intercept request or response objects
 Interceptors run before a request is fulfilled, and after response is gotten.
@@ -150,38 +223,40 @@ class NetworkDurationInterceptor extends ApiInterceptor {
 
 ### Test Example
 
+Pass a `MockClient` to `HttpApiProvider` to exercise the real request pipeline —
+interceptors, URL building and decoding included — without a network:
+
 ```dart
-
-
 void main() {
-  group('HttpApiProvider Tests', () {
-    late LocalRepository localRepository;
-    late RemoteRepository remoteRepository;
-    late TestRepository repository;
-
-    setUp(() {
-      remoteRepository = RemoteRepository(MockHttpApiProvider());
-      localRepository = MapRepository();
-      repository = TestRepository(localRepository, remoteRepository);
+  test('decodes the response body', () async {
+    final client = MockClient((request) async {
+      expect(request.url.path, '/posts');
+      return http.Response('{"data": [{"id": 1}]}', 200);
     });
 
-    test('Test Exception Formater', () async {
-      for (var type in ExceptionFormater.errorToObject.keys) {
-        print('testing $type');
-        var response = await repository.triggerError(type);
-        expect(response.error, isA<ApiError>());
-        expect(
-            (response.error as ApiError).message,
-            repository
-                .formatErrorMessage(ExceptionFormater.errorToObject[type], '')
-                .message);
-         
-      }
-    });
- 
+    final repository = PostRepository(
+      MapRepository(),
+      RemoteRepository(HttpApiProvider(client: client)),
+    );
+
+    final response = await repository.getPosts();
+
+    expect(response.isSuccessful, isTrue);
+    expect(response.body, hasLength(1));
+  });
+
+  test('a failing interceptor keeps its status code', () async {
+    final response = await remoteRepository.handleRequest(
+      ApiRequest<Post, Post>(
+        baseUrl: 'https://example.com',
+        interceptors: [ExpiredTokenInterceptor()], // throws ApiError('...', 401)
+      ),
+    );
+
+    expect(response.statusCode, 401);
   });
 }
-
 ```
+
 >> Check the example app for sample code
 More examples comming soon

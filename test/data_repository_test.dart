@@ -18,17 +18,18 @@ void main() {
     });
 
     test('Test Exception Formater', () async {
-      for (var type in ExceptionFormater.errorToObject.keys) {
+      for (var type in ExceptionFormatter.errorToObject.keys) {
         if (kDebugMode) {
           print('testing $type');
         }
         var response = await repository.triggerError(type);
         expect(response.error, isA<ApiError>());
         expect(
-            (response.error as ApiError).message,
-            repository
-                .formatErrorMessage(ExceptionFormater.errorToObject[type], '')
-                .message);
+          (response.error as ApiError).message,
+          repository
+              .formatErrorMessage(ExceptionFormatter.errorToObject[type], '')
+              .message,
+        );
       }
     });
 

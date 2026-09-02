@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:data_repository/local/local_repository.dart';
 import 'package:data_repository/remote/provider/providers/http_api_provider.dart';
-import 'package:data_repository/remote/provider/providers/http_override.dart';
 import 'package:data_repository/remote/remote_repository.dart';
 import 'package:example/env.dart';
 import 'package:flutter/foundation.dart';
@@ -18,11 +15,10 @@ class DependencyInjection {
       GetIt.I<GlobalKey<NavigatorState>>();
 
   /// registers necessary dependencies
-  static bootstrap() async {
+  static Future<void> bootstrap() async {
     WidgetsFlutterBinding.ensureInitialized();
     locator.registerSingleton<Env>(kDebugMode ? Development() : Production());
 
-    HttpOverrides.global = MyHttpOverrides();
     await Hive.initFlutter();
 
     locator.registerSingleton<LocalRepository>(HiveRepository());
