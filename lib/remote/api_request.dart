@@ -10,9 +10,29 @@ const Object _unset = Object();
 class ApiRequest<ResponseType, InnerType> {
   /// an ID used to track individual requests
   final String requestId;
-  final String? method, nestedKey;
+  final String? method;
+
+  /// Dotted path to the envelope that wraps the payload, resolved before
+  /// [dataKey] and before pagination is read.
+  ///
+  /// Two anchors exist because pagination sits *between* them:
+  ///
+  /// ```json
+  /// { "result": {            // nestedKey: 'result'
+  ///     "page": 1,           // pagination is read here
+  ///     "data": [ ... ] } }  // dataKey: 'data'
+  /// ```
+  ///
+  /// Any depth is supported: `nestedKey: 'response.payload.result'`.
+  final String? nestedKey;
   final String path;
   final int timeout;
+
+  /// Dotted path to the payload, resolved relative to [nestedKey].
+  ///
+  /// `'data'` selects one level, `'data.items'` two, `'data.pages[0].items'`
+  /// indexes a list, and `r'meta.user\.name'` escapes a literal dot. Empty —
+  /// the default — means the body itself.
   final String dataKey;
   final String baseUrl;
   final bool hasPagination;
@@ -132,8 +152,16 @@ class ApiRequest<ResponseType, InnerType> {
   }
 }
 
+/// Where an error payload sits inside a failed response body.
+///
+/// [key] is a dotted [JsonPath], so an error nested several levels down is
+/// reachable: `ErrorDescription(key: 'response.error.detail')`.
+///
+/// The default is the empty path, meaning the body itself is the error — the
+/// common shape. An explicit key is resolved strictly, so a mismatch reports
+/// null and logs rather than silently falling back to the whole body.
 class ErrorDescription {
   final String key;
 
-  ErrorDescription({this.key = 'error'});
+  ErrorDescription({this.key = ''});
 }

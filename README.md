@@ -121,8 +121,39 @@ JsonInterceptor<ErrorModel>(Models.factories,
     paginationFactory: PaginationModel.fromJson)
 ```
 
-Use `dataKey` when the payload is nested (`{"data": [...]}` → `dataKey: 'data'`)
-and `nestedKey` to unwrap an outer envelope first.
+### Reaching nested payloads
+
+`dataKey` and `nestedKey` are dotted paths, so a payload at any depth is
+reachable:
+
+```dart
+dataKey: 'data'                    // {"data": [...]}
+dataKey: 'response.payload.items'  // any depth
+dataKey: 'data.pages[0].items'     // list indices
+dataKey: r'meta.user\.name'        // backslash escapes a literal dot
+dataKey: ''                        // the body itself (default)
+```
+
+Two anchors exist because pagination is read *between* them:
+
+```json
+{ "result": {                    // nestedKey: 'result'
+    "page": 1, "pages": 5,       // pagination is read at this level
+    "data": [ ... ] } }          // dataKey: 'data'
+```
+
+`dataKey` is resolved relative to `nestedKey`, and each may be multi-level.
+A path that does not resolve yields a null body and logs which segment failed
+via `ApiConfig().logger`, so a typo or a schema change surfaces instead of
+silently decoding the wrong object.
+
+`ErrorDescription.key` is a path too, defaulting to the empty path — the error
+body is usually the response body:
+
+```dart
+ErrorDescription()                              // body itself
+ErrorDescription(key: 'response.error.detail')  // nested
+```
 
 ---
 

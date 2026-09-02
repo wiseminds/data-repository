@@ -4,6 +4,7 @@ import 'package:data_repository/models/json_factory.dart';
 import 'package:data_repository/models/pagination.dart';
 import 'package:data_repository/remote/api_response.dart';
 import 'package:data_repository/utils/api_config.dart';
+import 'package:data_repository/utils/json_path.dart';
 
 import 'api_interceptor.dart';
 
@@ -31,23 +32,21 @@ class JsonInterceptor<ErrorType> extends ApiInterceptor {
   ApiResponse<ResponseType, InnerType> onResponse<ResponseType, InnerType>(
     ApiResponse<ResponseType, InnerType> response,
   ) {
-    var decoded = _tryDecodeJson(response.bodyString);
+    final decoded = _tryDecodeJson(response.bodyString);
 
-    final nestedKey = response.request.nestedKey;
-    if (nestedKey != null && nestedKey.isNotEmpty) {
-      decoded = _getBody(decoded, nestedKey);
-    }
+    // The envelope is where pagination lives; the data path is resolved
+    // relative to it, so the two anchors stay independent.
+    final envelope = _resolve(decoded, response.request.nestedKey, 'nestedKey');
 
     Pagination? pagination;
     if (response.request.hasPagination && paginationFactory != null) {
-      final source = _getBody(decoded);
-      if (source is Map<String, dynamic>) {
-        pagination = paginationFactory!(source);
+      if (envelope is Map<String, dynamic>) {
+        pagination = paginationFactory!(envelope);
       }
     }
 
     final body = _decode<InnerType>(
-      _getBody(decoded, response.request.dataKey),
+      _resolve(envelope, response.request.dataKey, 'dataKey'),
     );
     return response.copyWith(body: body, pagination: pagination);
   }
@@ -62,9 +61,10 @@ class JsonInterceptor<ErrorType> extends ApiInterceptor {
     if (response.error != null) return response;
 
     try {
-      final decoded = _getBody(
+      final decoded = _resolve(
         _tryDecodeJson(response.bodyString),
         response.request.error?.key,
+        'error',
       );
       return response.copyWith(error: _decode<ErrorType>(decoded));
     } catch (e, trace) {
@@ -94,10 +94,21 @@ class JsonInterceptor<ErrorType> extends ApiInterceptor {
     return factory(values) as T?;
   }
 
-  dynamic _getBody(dynamic body, [String? key]) {
-    if (key == null || key.isEmpty) return body;
-    if (body is Map && body.containsKey(key)) return body[key];
-    return body;
+  /// Resolves a dotted [path] against [body].
+  ///
+  /// An empty or absent path selects [body] itself. A path that does not
+  /// resolve yields null and logs the segment that failed, rather than
+  /// silently handing back the whole body for a typo.
+  dynamic _resolve(dynamic body, String? path, String label) {
+    if (path == null || path.isEmpty) return body;
+
+    final result = JsonPath.parse(path).resolve(body);
+    if (result.found) return result.value;
+
+    ApiConfig().log(
+      '$label "$path" did not resolve: nothing at "${result.missingAt}"',
+    );
+    return null;
   }
 
   dynamic _tryDecodeJson(dynamic data) {

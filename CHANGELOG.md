@@ -62,6 +62,14 @@
 * **`RequestOptions`**, carrying per-call cancellation, retry, progress and timeout so these do not
   each become another parameter on `handleRequest`.
 
+### Added
+* **Dotted paths for `dataKey`, `nestedKey` and `ErrorDescription.key`.** Each was previously a single
+  map key, and since the two were applied one after the other the payload could only ever be two
+  levels deep. They now accept a `JsonPath`: `'response.payload.items'`, list indices
+  (`'data.pages[0].items'`) and backslash-escaped literal dots. A single key with no dots behaves
+  exactly as before, so existing values need no change.
+* `JsonPath` is exported for direct use and testing.
+
 ### Changed
 * `ApiRequest.build` and `ApiResponse.resolve` are now `Future`s, following the async interceptors.
 * `ApiProvider.send` takes an optional `RequestOptions` and gained a `close()`.
@@ -70,6 +78,11 @@
 * Removed the `Extra` class and `ApiRequest.extra`, which were accepted but never used.
 * `CacheManager` no longer derives filenames from the last path segment, which collided distinct
   keys such as `posts/1` and `comments/1` onto one file. Keys are now sanitised and hashed.
+* A `dataKey` / `nestedKey` / error key that does not resolve now yields null and logs the failing
+  segment. Previously an unresolved key silently returned the whole body, so a typo or a schema
+  change decoded the wrong object with no diagnostic.
+* `ErrorDescription.key` now defaults to the empty path (the body itself) rather than `'error'`,
+  which is the shape most APIs use and what the old root-fallback effectively produced.
 
 ### Packaging
 * Rewrote `pubspec.yaml` metadata: a fuller `description` (147 chars, within pub.dev's 60-180 range),
