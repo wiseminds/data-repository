@@ -13,12 +13,12 @@ class PostCubit extends Cubit<PostState> {
 
   final _repository = PostRepository();
 
-  cacheUpdated(CacheDescription? value) {
+  void cacheUpdated(CacheDescription? value) {
     emit(state.updateCache(value));
     Future.delayed(Duration.zero, getPosts);
   }
 
-  getPosts() async {
+  Future<void> getPosts() async {
     emit(state.loading());
 
     final response = await _repository.getPost(state.cache);

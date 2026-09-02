@@ -15,22 +15,26 @@ class CacheDescription {
   /// this tell the cache client to only fetch from cache and to ignore saving to cache
   final bool ignoreSave;
 
-  CacheDescription copyWith(
-          {int? lifeSpan,
-          bool? overrideTime,
-          bool? invalidateCache,
-          bool? ignoreSave}) =>
-      CacheDescription(_key,
-          lifeSpan: lifeSpan ?? this.lifeSpan,
-          overrideTime: overrideTime ?? this.overrideTime,
-          ignoreSave: ignoreSave ?? this.ignoreSave,
-          invalidateCache: invalidateCache ?? this.invalidateCache);
+  CacheDescription copyWith({
+    int? lifeSpan,
+    bool? overrideTime,
+    bool? invalidateCache,
+    bool? ignoreSave,
+  }) => CacheDescription(
+    _key,
+    lifeSpan: lifeSpan ?? this.lifeSpan,
+    overrideTime: overrideTime ?? this.overrideTime,
+    ignoreSave: ignoreSave ?? this.ignoreSave,
+    invalidateCache: invalidateCache ?? this.invalidateCache,
+  );
 
-  CacheDescription(this._key,
-      {this.ignoreSave = false,
-      this.lifeSpan = CacheDescription.oneMinute * 2,
-      this.overrideTime = false,
-      this.invalidateCache = false});
+  CacheDescription(
+    this._key, {
+    this.ignoreSave = false,
+    this.lifeSpan = CacheDescription.oneMinute * 2,
+    this.overrideTime = false,
+    this.invalidateCache = false,
+  });
 
   static const oneMonth = oneDay * 30;
   static const sevenDays = oneDay * 7;
