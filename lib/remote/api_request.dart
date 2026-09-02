@@ -1,8 +1,10 @@
-import 'package:data_repository/models/pagination.dart';
 import 'package:data_repository/remote/interceptors/api_interceptor.dart';
 import 'package:flutter/foundation.dart';
 
 import 'api_methods.dart';
+
+/// Sentinel distinguishing "argument omitted" from "argument explicitly null".
+const Object _unset = Object();
 
 class ApiRequest<ResponseType, InnerType> {
   /// an ID used to track individual requests
@@ -13,7 +15,7 @@ class ApiRequest<ResponseType, InnerType> {
   final String dataKey;
   final String baseUrl;
   final bool hasPagination;
-  final bool? ovveride500Error;
+  final bool? override500Error;
   final Map<String, dynamic>? body;
   final Map<String, String> headers;
   final Map<String, dynamic> query;
@@ -22,89 +24,107 @@ class ApiRequest<ResponseType, InnerType> {
   final ErrorDescription? error;
   final bool isMultipart;
 
-  ApiRequest(
-      {String? requestId,
-      this.hasPagination = false,
-      this.isMultipart = false,
-      this.extra,
-      this.ovveride500Error = true,
-      this.headers = const {},
-      this.query = const {},
-      this.error,
-      this.nestedKey,
-      this.method = ApiMethods.get,
-      this.dataKey = '',
-      this.interceptors = const [],
-      this.path = '',
-      required this.baseUrl,
-      this.timeout = 50,
-      this.body})
-      : requestId = requestId ?? UniqueKey().toString();
+  ApiRequest({
+    String? requestId,
+    this.hasPagination = false,
+    this.isMultipart = false,
+    this.extra,
+    this.override500Error = true,
+    this.headers = const {},
+    this.query = const {},
+    this.error,
+    this.nestedKey,
+    this.method = ApiMethods.get,
+    this.dataKey = '',
+    this.interceptors = const [],
+    this.path = '',
+    required this.baseUrl,
+    this.timeout = 50,
+    this.body,
+  }) : requestId = requestId ?? UniqueKey().toString();
 
   factory ApiRequest.dummy() => ApiRequest<ResponseType, InnerType>(
-      hasPagination: false,
-      headers: {},
-      query: {},
-      method: ApiMethods.get,
-      dataKey: '',
-      isMultipart: false,
-      path: '',
-      baseUrl: '');
+    hasPagination: false,
+    headers: {},
+    query: {},
+    method: ApiMethods.get,
+    dataKey: '',
+    isMultipart: false,
+    path: '',
+    baseUrl: '',
+  );
 
-  ApiRequest<ResponseType, InnerType> copyWith(
-          {String? method,
-          String? path,
-          String? dataKey,
-          String? baseUrl,
-          bool? hasPagination,
-          Pagination? pagination,
-          List<Extra>? extra,
-          int? timeout,
-          bool? ovveride500Error,
-          bool? isMultipart,
-          Map<String, dynamic>? body,
-          Map<String, String>? headers,
-          List<ApiInterceptor>? interceptors,
-          ErrorDescription? error,
-          String? nestedKey,
-          Map<String, dynamic>? query}) =>
-      ApiRequest<ResponseType, InnerType>(
-          requestId: requestId,
-          hasPagination: hasPagination ?? this.hasPagination,
-          headers: headers ?? this.headers,
-          query: query ?? this.query,
-          method: method ?? this.method,
-          dataKey: dataKey ?? this.dataKey,
-          nestedKey: nestedKey ?? this.nestedKey,
-          isMultipart: isMultipart ?? this.isMultipart,
-          path: path ?? this.path,
-          extra: extra ?? this.extra,
-          error: error ?? this.error,
-          timeout: timeout ?? this.timeout,
-          ovveride500Error: ovveride500Error ?? this.ovveride500Error,
-          baseUrl: baseUrl ?? this.baseUrl,
-          interceptors: [...?interceptors, ...this.interceptors],
-          body: body ?? this.body);
+  /// Note: [interceptors] are *appended* to the existing chain rather than
+  /// replacing it, so an interceptor can add another without discarding the
+  /// ones already configured on the request.
+  ApiRequest<ResponseType, InnerType> copyWith({
+    String? method,
+    String? path,
+    String? dataKey,
+    String? baseUrl,
+    bool? hasPagination,
+    List<Extra>? extra,
+    int? timeout,
+    bool? override500Error,
+    bool? isMultipart,
+    Object? body = _unset,
+    Map<String, String>? headers,
+    List<ApiInterceptor>? interceptors,
+    Object? error = _unset,
+    Object? nestedKey = _unset,
+    Map<String, dynamic>? query,
+  }) => ApiRequest<ResponseType, InnerType>(
+    requestId: requestId,
+    hasPagination: hasPagination ?? this.hasPagination,
+    headers: headers ?? this.headers,
+    query: query ?? this.query,
+    method: method ?? this.method,
+    dataKey: dataKey ?? this.dataKey,
+    nestedKey: identical(nestedKey, _unset)
+        ? this.nestedKey
+        : nestedKey as String?,
+    isMultipart: isMultipart ?? this.isMultipart,
+    path: path ?? this.path,
+    extra: extra ?? this.extra,
+    error: identical(error, _unset) ? this.error : error as ErrorDescription?,
+    timeout: timeout ?? this.timeout,
+    override500Error: override500Error ?? this.override500Error,
+    baseUrl: baseUrl ?? this.baseUrl,
+    interceptors: [...?interceptors, ...this.interceptors],
+    body: identical(body, _unset) ? this.body : body as Map<String, dynamic>?,
+  );
 
+  /// Runs the `onRequest` interceptors and returns the resulting request.
+  ///
+  /// Interceptor exceptions are intentionally not caught here — callers run
+  /// this inside their own error handling so a throwing interceptor is
+  /// reported rather than silently skipped.
   ApiRequest<ResponseType, InnerType> get build {
-    // print('Building request: ${this.isMultipart}, url: $path');
-    // Log.v('Building request: ${isMultipart}, url: $path,  ');
     var request = this;
-    for (var e in request.interceptors) {
-      request = e.onRequest(request);
+    for (final interceptor in interceptors) {
+      request = interceptor.onRequest(request);
     }
     return request;
   }
 
   Uri get uri {
-    var u = Uri.parse('$baseUrl/$path').normalizePath();
-    return u.replace(
-        queryParameters: {
-          ...query.map<String, String>((key, value) => MapEntry(key, '$value')),
-          ...u.queryParameters
-        },
-        pathSegments:
-            u.pathSegments.where((element) => element.isNotEmpty).toList());
+    final parsed = Uri.parse('$baseUrl/$path').normalizePath();
+
+    /// The explicit [query] is applied last so it wins over any parameters
+    /// already embedded in [path].
+    final merged = <String, String>{
+      ...parsed.queryParameters,
+      ...query.map((key, value) => MapEntry(key, '$value')),
+    };
+
+    return parsed.replace(
+      pathSegments: parsed.pathSegments
+          .where((element) => element.isNotEmpty)
+          .toList(),
+      // Passing an empty map would append a bare '?' to every URL that has no
+      // query parameters; null leaves the (empty) query untouched.
+      queryParameters: merged.isEmpty ? null : merged,
+    );
   }
 }
 

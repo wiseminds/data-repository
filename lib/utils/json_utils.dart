@@ -1,47 +1,52 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'api_config.dart';
 
-class Jsonutils {
-  static String encode(dynamic json) {
-    return jsonEncode(json);
-  }
+/// Thrown by [JsonUtils.convertToJson] when a value cannot be serialised.
+class JsonSerializationException implements Exception {
+  final Object? value;
 
-  static dynamic decode(String json) {
-    return jsonDecode(json);
-  }
+  JsonSerializationException(this.value);
 
-  static dynamic convertToJson(dynamic data) {
-    return json.encode(_encode(data));
-  }
+  @override
+  String toString() =>
+      'JsonSerializationException: ${value.runtimeType} has no toJson()';
+}
 
-  static dynamic _serialize<T>(dynamic value) {
-    if (value is Map<String, dynamic> || value is String) return value;
+class JsonUtils {
+  static String encode(dynamic json) => jsonEncode(json);
+
+  static dynamic decode(String json) => jsonDecode(json);
+
+  /// Serialises [data] to a JSON string.
+  ///
+  /// Throws [JsonSerializationException] when a value cannot be serialised,
+  /// rather than returning the string "null" for the caller to cache.
+  static String convertToJson(dynamic data) => json.encode(_encode(data));
+
+  static dynamic _serialize(dynamic value) {
+    if (value is Map || value is String || value is num || value is bool) {
+      return value;
+    }
+    if (value == null) return null;
     try {
-      if (value.toJson != null) return value.toJson();
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      // Deliberately dynamic: any type exposing toJson() is supported.
+      return value.toJson();
+    } on NoSuchMethodError {
+      ApiConfig().log('cannot serialise ${value.runtimeType}: no toJson()');
+      throw JsonSerializationException(value);
     }
   }
 
-  static List<T> _serializeListOf<T>(Iterable value) => List.castFrom(
-        value.map((value) => _serialize<T>(value)).toList(growable: false),
-      );
+  static List _serializeListOf(Iterable value) =>
+      value.map(_serialize).toList(growable: false);
 
-  static dynamic _encode<T>(entity) {
+  static dynamic _encode(dynamic entity) {
     /// handle case when we want to access to Map<String, dynamic> directly
     /// getResource or getMapResource
     /// Avoid dynamic or unconverted value, this could lead to several issues
     if (entity is String) return entity;
-
-    try {
-      if (entity is Iterable) return _serializeListOf<T>(entity);
-      return _serialize<T>(entity);
-    } catch (e) {
-      if (kDebugMode) print(e);
-      return null;
-    }
+    if (entity is Iterable) return _serializeListOf(entity);
+    return _serialize(entity);
   }
 }
