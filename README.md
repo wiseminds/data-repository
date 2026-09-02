@@ -1,110 +1,109 @@
 # data_repository
 
-Repository layer for Flutter: typed HTTP requests, interceptors, response
-caching, pagination and error normalisation behind one API.
+A repository layer for Flutter that unifies typed HTTP requests, interceptors,
+response caching, pagination and error normalisation behind one API.
 
 [![pub package](https://img.shields.io/pub/v/data_repository.svg)](https://pub.dev/packages/data_repository)
 
-## Features
-see the live sample [here](https://wiseminds.github.io/data-repository/)
-
-
-## Getting started
-
-> Define your implementation of local and remote repositories.
-
-The local repository manages caching and retrieving data localy, while the remote repository manages retrieving data from a remote source.
-I would recommend using GetIt for this
+See the live sample [here](https://wiseminds.github.io/data-repository/).
 
 ```dart
-   GetIt.I.registerSingleton<LocalRepository>(HiveRepository());
-    GetIt.I.registerSingleton<RemoteRepository>(
-        RemoteRepository((HttpApiProvider())));
-```
+final response = await repository.getPosts();
 
-> create an API service class. This is just a class where you define your API requests
-
-```dart
-class PostApi  {
-  ApiRequest<Post, Post> create(CreatePostDto body) {
-    return ApiRequest<Post, Post>(
-        baseUrl: baseUrl,
-        path: ApiUrls.department,
-        method: ApiMethods.post,
-        body: body.toJson,
-        dataKey: 'data',
-        error: ErrorDescription(),
-        interceptors: [
-        HeaderInterceptor({
-                'Authorization': 'Bearer $token',
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-        }),
-          JsonInterceptor<ErrorModel>(Models.factories),
-          NetworkDurationInterceptor(),
-        ]);
-  }
+if (response.isSuccessful) {
+  render(response.body!);            // already decoded into List<Post>
+} else {
+  showError((response.error as ApiError).message);
 }
 ```
 
-> Create a resository class and extend the `DataRepository` class
+---
 
-Here you need to initialize your local and remote repository implementations.
+## Built on dependency inversion
 
+Every moving part is an interface you supply, and the layer above it never
+learns which implementation it got. That is the whole design:
+
+| Abstraction | What it decides | Ships with | Swap it for |
+|---|---|---|---|
+| `LocalRepository` | where cached data lives | `FileLocalRepository`, `MapRepository` | Hive, Isar, shared_preferences |
+| `ApiProvider` | how requests travel | `HttpApiProvider` | Dio, gRPC gateway, an in-memory fake |
+| `ApiInterceptor` | what happens per request | `Header`, `Json`, `Logging` | auth, tracing, signing |
+
+Your repository depends on the two interfaces, and on nothing else:
 
 ```dart
 class PostRepository extends DataRepository {
-  final _api = PostApi();
+  final PostApi _api;
+  PostRepository(super.localRepository, super.remoteRepository, this._api);
 
-  PostRepository()
-      : super(GetIt.I<LocalRepository>(), GetIt.I<RemoteRepository>());
-
-  Future<ApiResponse<Post, Post>> createPost(CreatePostDto body) async {
-    return await handleRequest(_api.create(body));
-  }
-
+  Future<ApiResponse<List<Post>, Post>> getPosts() =>
+      handleRequest(_api.getPosts());
+}
 ```
 
-you can use your repository in you view model to fetch data and manage state based on the response.
-
+Concrete types are named in exactly one place — the composition root:
 
 ```dart
- void createPost() async {
-    emit(state.loading());
-
-    final response = await _repository.createPost(CreatePostDto(
-        title: state.title ?? '',
-        content: state.content ?? '',
-        image: state.image ?? ''));
-
-    if (response.isSuccessful) {
-      emit(PostCreated('Register success', state));
-    } else {
-      // print((response.error as ApiError).message);
-      emit(ErrorState(response.error as ApiError, state));
-    }
-  }
-
+locator.registerSingleton<LocalRepository>(FileLocalRepository());
+locator.registerSingleton<ApiProvider>(HttpApiProvider());
+locator.registerSingleton<RemoteRepository>(
+  RemoteRepository(locator<ApiProvider>(), 'Something went wrong'),
+);
+locator.registerLazySingleton(
+  () => PostRepository(locator(), locator(), PostApi(baseUrl: env.baseUrl)),
+);
 ```
-### caching
-in your repository, you can set `CacheDescription` to define if you want request to be cached.
-you set the key, and the lifespan
+
+Because nothing reaches into the locator, the same repository is constructible
+in a test with no framework at all:
 
 ```dart
-
-  Future<ApiResponse<List<Post>, Post>> getPost() async {
-    return await handleRequest(_api.getPost(),
-        cache: CacheDescription('posts-list',
-            lifeSpan: CacheDescription.oneMinute));
-  }
+final repository = PostRepository(
+  MapRepository(),                                  // cache -> memory
+  RemoteRepository(HttpApiProvider(                 // transport -> canned
+    client: MockClient((_) async => http.Response('[{"id":1}]', 200)),
+  )),
+  PostApi(baseUrl: 'https://example.com'),
+);
 ```
 
+GetIt is used in the example for convenience — the package has no opinion and
+no dependency on it. Constructor parameters are the only contract.
 
+---
 
-### decoding responses
+## Getting started
 
-`JsonInterceptor` ships with the package. Give it a registry mapping each model
-type to its factory, and the type parameter names the model an error body
+Add the dependency, then define an API class describing *what* to call. It
+performs no I/O, so it stays trivially testable:
+
+```dart
+class PostApi {
+  final String baseUrl;
+  PostApi({required this.baseUrl});
+
+  ApiRequest<List<Post>, Post> getPosts() => ApiRequest<List<Post>, Post>(
+        baseUrl: baseUrl,
+        path: 'posts',
+        error: ErrorDescription(),
+        interceptors: [
+          HeaderInterceptor(const {'Accept': 'application/json'}),
+          JsonInterceptor<ErrorModel>(Models.factories),
+        ],
+      );
+}
+```
+
+The two type parameters are the response type and its element type: for a list
+endpoint that is `<List<Post>, Post>`; for a single object, `<Post, Post>`.
+
+---
+
+## Decoding responses
+
+`JsonInterceptor` turns bodies into typed models. Give it a registry mapping a
+type to its factory; the type parameter names the model an *error* body
 decodes into:
 
 ```dart
@@ -115,20 +114,151 @@ class Models {
   };
 }
 
-// on the request:
 JsonInterceptor<ErrorModel>(Models.factories)
 
-// for a paginated endpoint (hasPagination: true):
+// paginated endpoints (hasPagination: true)
 JsonInterceptor<ErrorModel>(Models.factories,
     paginationFactory: PaginationModel.fromJson)
 ```
 
-### error handling
+Use `dataKey` when the payload is nested (`{"data": [...]}` → `dataKey: 'data'`)
+and `nestedKey` to unwrap an outer envelope first.
+
+---
+
+## Caching
+
+Pass a `CacheDescription` and the response is served from the local repository
+until it expires:
+
+```dart
+Future<ApiResponse<List<Post>, Post>> getPosts() => handleRequest(
+      _api.getPosts(),
+      cache: CacheDescription('posts-list', lifeSpan: CacheDescription.oneMinute),
+    );
+```
+
+`overrideTime` ignores expiry, `invalidateCache` forces a refetch, `ignoreSave`
+reads without writing, and `retryWithCache: true` falls back to stale data when
+the network fails. A cache hit reports `ApiResponse.cacheHit`.
+
+`FileLocalRepository` persists to disk with no extra dependency. Swap in
+`MapRepository` for tests, or adapt any store you like:
+
+```dart
+class HiveRepository implements LocalRepository { /* ... */ }
+```
+
+---
+
+## Retries and backoff
+
+Transient failures are re-attempted with exponential backoff and jitter. The
+request is rebuilt on every attempt, so `onRequest` interceptors run again:
+
+```dart
+RemoteRepository(provider, 'Something went wrong',
+    const RetryPolicy(maxAttempts: 3));           // app-wide default
+
+repository.getPosts(options: const RequestOptions(  // or per call
+  retry: RetryPolicy(maxAttempts: 5, initialDelay: Duration(seconds: 1)),
+));
+```
+
+By default only transport failures, timeouts, 408, 429 and 5xx are retried, and
+only for idempotent methods — replaying a POST can duplicate work. Opt in with
+your own predicate:
+
+```dart
+RetryPolicy(retryIf: (response, attempt) => response.statusCode >= 500)
+```
+
+---
+
+## Async interceptors and token refresh
+
+Every hook returns `FutureOr`, so an interceptor can be synchronous *or* await.
+That is what makes an in-band token refresh possible:
+
+```dart
+class AuthInterceptor extends ApiInterceptor {
+  @override
+  Future<ApiRequest<R, I>> onRequest<R, I>(ApiRequest<R, I> request) async {
+    final token = await _store.readToken();          // await freely
+    return request.copyWith(headers: {'Authorization': 'Bearer $token'});
+  }
+
+  @override
+  Future<ApiResponse<R, I>> onError<R, I>(ApiResponse<R, I> response) async {
+    if (response.statusCode == 401) await _store.refresh();
+    return response;
+  }
+}
+```
+
+Combined with a retry policy that treats 401 as retryable, the replayed attempt
+picks up the refreshed token automatically:
+
+```dart
+options: const RequestOptions(
+  retry: RetryPolicy(maxAttempts: 2, retryIf: _retryUnauthorized),
+)
+```
+
+---
+
+## Cancellation
+
+```dart
+final _token = CancellationToken();
+
+Future<void> load() => repository.getPosts(
+      options: RequestOptions(cancelToken: _token),
+    );
+
+@override
+void dispose() {
+  _token.cancel('screen closed');
+  super.dispose();
+}
+```
+
+A cancelled call returns a response with `isCancelled == true` and
+`ApiResponse.cancelled` as its status, rather than an error you would have to
+filter out of your UI. Cancellation stops the caller waiting; it does not
+guarantee the socket is torn down, since `package:http` exposes no per-request
+abort.
+
+---
+
+## Progress
+
+```dart
+repository.upload(file, options: RequestOptions(
+  onSendProgress: (sent, total) => setState(() => _progress = sent / total),
+  onReceiveProgress: (received, total) { /* ... */ },
+));
+```
+
+`total` is `-1` when the length is unknown.
+
+---
+
+## Request de-duplication
+
+Identical GETs issued while one is already in flight share a single network
+call — two widgets asking for the same data on the same frame cost one request.
+It is on by default; disable it per call with
+`RequestOptions(skipDeduplication: true)` or globally via the `RemoteRepository`
+constructor.
+
+---
+
+## Error handling
 
 `response.error` is the normalised `ApiError` you render. When the failure came
-from an exception rather than an HTTP status, `response.cause` holds the
-original throwable, so a custom exception thrown by an interceptor stays
-recoverable:
+from an exception, `response.cause` holds the original throwable, so a custom
+exception stays recoverable:
 
 ```dart
 if (!response.isSuccessful) {
@@ -138,125 +268,97 @@ if (!response.isSuccessful) {
 }
 ```
 
-An interceptor that throws an `ApiError` carrying an HTTP status code has that
-status surfaced on the response, so this works:
+An interceptor throwing an `ApiError` with an HTTP status has that status
+surfaced on the response:
 
 ```dart
-// in an interceptor's onRequest
-if (tokenIsExpired) throw ApiError('Unauthorized', 401);
-
-// at the call site
-if (response.statusCode == 401) await refreshToken();
+if (tokenIsExpired) throw ApiError('Unauthorized', 401);   // in onRequest
+// ...
+if (response.statusCode == 401) await refreshToken();      // at the call site
 ```
 
-### logging
+---
 
-The package is silent unless you give it somewhere to write:
+## Logging
+
+The package writes nothing unless you give it somewhere to write:
 
 ```dart
-ApiConfig().logger = debugPrint;   // or your own logger
+ApiConfig().logger = debugPrint;
 ```
 
-### connection reuse and testing
+Add `LoggingInterceptor()` to a request chain for per-request detail. It
+redacts `Authorization`, `Cookie` and `X-Api-Key` by default and truncates long
+bodies:
 
-`HttpApiProvider` accepts an `http.Client`, which lets connections be reused
-across requests and lets tests substitute a mock transport:
-
-```dart
-RemoteRepository(HttpApiProvider(client: MockClient((request) async {
-  return http.Response('{"data": []}', 200);
-})));
+```
+--> GET https://api.example.com/posts
+    headers: {Authorization: ***, Accept: application/json}
+<-- 200 GET https://api.example.com/posts (142ms)
 ```
 
-### interceptors
-You can define interceptors to intercept request or response objects
-Interceptors run before a request is fulfilled, and after response is gotten.
-To create an interceptor, extend the `ApiInterceptor` class and override `onRequest` to 
-intercept request and `onResponse` to intercept response and `onError` to intercept request error.
+---
+
+## Custom interceptors
+
+Extend `ApiInterceptor` and override the hooks you need — each defaults to a
+pass-through:
 
 ```dart
-
-class NetworkDurationInterceptor extends ApiInterceptor {
-  Map<String, int> timestamp = {};
-
+class TracingInterceptor extends ApiInterceptor {
   @override
-  ApiResponse<ResponseType, InnerType> onResponse<ResponseType, InnerType>(
-      ApiResponse<ResponseType, InnerType> response) {
-    if (kDebugMode) {
-      print(
-          'NetworkDurationInterceptor ${response.statusCode}, ${response.request.requestId}, $timestamp ${timestamp[response.request.requestId]}');
-    }
-
-    var duration = DateTime.now().millisecondsSinceEpoch -
-        (timestamp.remove(response.request.requestId) ?? 00);
-
-    if (kDebugMode) {
-      print('request completed in $duration milliseconds');
-    }
-
-    return response.copyWith(extra: {...?response.extra, 'duration': duration});
-  }
-
-  @override
-  ApiRequest<ResponseType, InnerType> onRequest<ResponseType, InnerType>(
-      ApiRequest<ResponseType, InnerType> request) {
-    timestamp
-        .addAll({request.requestId: DateTime.now().millisecondsSinceEpoch});
-    return request; //.copyWith(: );
-  }
-
-  @override
-  ApiResponse<ResponseType, InnerType> onError<ResponseType, InnerType>(
-      ApiResponse<ResponseType, InnerType> response) {
-    var duration = DateTime.now().millisecondsSinceEpoch -
-        (timestamp.remove(response.request.requestId) ?? 00);
-
-    if (kDebugMode) {
-      print('request completed with error in $duration milliseconds');
-    }
-
-    return response.copyWith(extra: {...?response.extra, 'duration': duration});
-  }
-}
-
-```
-
-### Test Example
-
-Pass a `MockClient` to `HttpApiProvider` to exercise the real request pipeline —
-interceptors, URL building and decoding included — without a network:
-
-```dart
-void main() {
-  test('decodes the response body', () async {
-    final client = MockClient((request) async {
-      expect(request.url.path, '/posts');
-      return http.Response('{"data": [{"id": 1}]}', 200);
-    });
-
-    final repository = PostRepository(
-      MapRepository(),
-      RemoteRepository(HttpApiProvider(client: client)),
-    );
-
-    final response = await repository.getPosts();
-
-    expect(response.isSuccessful, isTrue);
-    expect(response.body, hasLength(1));
-  });
-
-  test('a failing interceptor keeps its status code', () async {
-    final response = await remoteRepository.handleRequest(
-      ApiRequest<Post, Post>(
-        baseUrl: 'https://example.com',
-        interceptors: [ExpiredTokenInterceptor()], // throws ApiError('...', 401)
-      ),
-    );
-
-    expect(response.statusCode, 401);
-  });
+  ApiRequest<R, I> onRequest<R, I>(ApiRequest<R, I> request) =>
+      request.copyWith(headers: {'X-Trace-Id': newTraceId()});
 }
 ```
 
->> Check the example app for sample code
-More examples comming soon
+`onRequest` runs before the call, `onResponse` after a 2xx, `onError`
+otherwise. Interceptors passed to `copyWith` are *appended* to the chain, so a
+per-endpoint interceptor never discards the shared ones.
+
+---
+
+## Testing
+
+`HttpApiProvider` takes an `http.Client`, so the whole pipeline — URL building,
+headers, interceptors, decoding — runs against a canned transport:
+
+```dart
+test('decodes the response body', () async {
+  final client = MockClient((request) async {
+    expect(request.url.path, '/posts');
+    return http.Response('{"data": [{"id": 1}]}', 200);
+  });
+
+  final repository = PostRepository(
+    MapRepository(),
+    RemoteRepository(HttpApiProvider(client: client)),
+    PostApi(baseUrl: 'https://example.com'),
+  );
+
+  final response = await repository.getPosts();
+
+  expect(response.isSuccessful, isTrue);
+  expect(response.body, hasLength(1));
+});
+```
+
+For a fake with no HTTP at all, implement `ApiProvider` directly and inject it.
+
+---
+
+## API surface
+
+| Type | Role |
+|---|---|
+| `DataRepository` | base class you extend; decides cache vs network |
+| `RemoteRepository` | retries, de-duplication, cancellation, error normalisation |
+| `ApiProvider` | the transport seam |
+| `ApiRequest` / `ApiResponse` | the description of a call and its result |
+| `RequestOptions` | per-call cancellation, retry, progress, timeout |
+| `RetryPolicy` / `CancellationToken` | retry behaviour and cancellation |
+| `LocalRepository` | the persistence seam |
+| `ApiInterceptor` | the per-request hook |
+| `ApiConfig` | logger and default error message |
+
+Check the [example app](example/) for the full wiring.

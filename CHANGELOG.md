@@ -42,6 +42,35 @@
 * `JsonInterceptor.onError` decoded `dart:convert`'s top-level `json` object instead of the response body
   in its fallback path.
 
+### Added
+* **Async interceptors.** Every `ApiInterceptor` hook now returns `FutureOr`, so an interceptor can
+  await -- refresh a token, read from secure storage -- before the request goes out. Existing
+  synchronous interceptors satisfy the new signature unchanged.
+* **`RetryPolicy`** with exponential backoff and jitter, configurable app-wide on `RemoteRepository`,
+  per request via `ApiRequest.retryPolicy`, or per call via `RequestOptions.retry`. Defaults to
+  transport failures, timeouts, 408, 429 and 5xx, and only for idempotent methods. The request is
+  rebuilt on each attempt, so a token refreshed in `onError` is picked up by the replay.
+* **`CancellationToken`** and `RequestOptions.cancelToken`. A cancelled call returns
+  `ApiResponse.cancelled` with `isCancelled == true` rather than an error the UI must filter out.
+* **`FileLocalRepository`**, a persistent `LocalRepository` built on `CacheManager`, so caching works
+  without writing a storage adapter first.
+* **In-flight de-duplication.** Identical concurrent GETs share one network call. On by default;
+  disable per call with `RequestOptions.skipDeduplication` or globally on `RemoteRepository`.
+* **`LoggingInterceptor`**, emitting through `ApiConfig().logger`, redacting `Authorization`,
+  `Cookie` and `X-Api-Key`, and truncating long bodies.
+* **Upload and download progress** via `RequestOptions.onSendProgress` / `onReceiveProgress`.
+* **`RequestOptions`**, carrying per-call cancellation, retry, progress and timeout so these do not
+  each become another parameter on `handleRequest`.
+
+### Changed
+* `ApiRequest.build` and `ApiResponse.resolve` are now `Future`s, following the async interceptors.
+* `ApiProvider.send` takes an optional `RequestOptions` and gained a `close()`.
+* `HttpApiProvider` now issues requests through `Client.send`, which is what enables streaming
+  progress and cancellation.
+* Removed the `Extra` class and `ApiRequest.extra`, which were accepted but never used.
+* `CacheManager` no longer derives filenames from the last path segment, which collided distinct
+  keys such as `posts/1` and `comments/1` onto one file. Keys are now sanitised and hashed.
+
 ### Packaging
 * Rewrote `pubspec.yaml` metadata: a fuller `description` (147 chars, within pub.dev's 60-180 range),
   plus `issue_tracker`, `documentation` and `topics` (networking, http, rest, cache, api) for
