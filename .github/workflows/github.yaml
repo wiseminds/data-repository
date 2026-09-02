@@ -11,28 +11,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3 
-      - uses: subosito/flutter-action@v1
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: '3.7.0'
-
-
-      # - name: Go to example folder
-      #   run: cd example             
 
       - name: Install dependencies
-        run: cd example && flutter build web
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
 
       - name: Analyze project source
         run: flutter analyze
 
-      # - name: Run tests
-      #   run: dart test   
+      - name: Run tests
+        run: flutter test
+
+      - name: Build example
+        run: cd example && flutter pub get && flutter build web
 
       - name: Deploy
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./example/build/web 
-  
+          publish_dir: ./example/build/web
