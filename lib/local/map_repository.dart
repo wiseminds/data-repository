@@ -2,18 +2,23 @@ import 'package:data_repository/utils/extensions/index.dart';
 
 import 'local_repository.dart';
 
-// this is a local key value store
+/// An in-memory key/value [LocalRepository], useful for tests and for
+/// callers that do not need cache to survive a restart.
 class MapRepository implements LocalRepository {
-  late Map<String, dynamic> cacheBox = {};
-  late Map<String, int> cacheTimeBox = {};
+  final Map<String, dynamic> cacheBox = {};
+  final Map<String, int> cacheTimeBox = {};
+
   MapRepository() {
     init();
   }
 
   @override
+  bool isInitialized = false;
+
+  @override
   Future init() async {
-    cacheBox = {};
-    cacheTimeBox = {};
+    cacheBox.clear();
+    cacheTimeBox.clear();
     isInitialized = true;
   }
 
@@ -22,25 +27,23 @@ class MapRepository implements LocalRepository {
 
   @override
   Future<dynamic> saveData(String key, String data) async =>
-      cacheBox.addAll({key: data});
+      cacheBox[key] = data;
 
   @override
   Future<bool> checkCache(String key) async {
-    var time = cacheTimeBox.getKey<Object>(key)?.asInt;
-    // print('cache: $key, $time');
+    final time = cacheTimeBox.getKey<Object>(key)?.asInt;
     if (time == null) return false;
     return !time.isPast;
   }
 
   @override
   Future<int?> getTime(String key) async =>
-      cacheTimeBox.getKey<Object>(key).asInt;
+      cacheTimeBox.getKey<Object>(key)?.asInt;
 
   @override
-  void saveTime(String? key, int? duration) {
-    if (key != null && key.isNotEmpty && duration != null && !duration.isNaN) {
-      cacheTimeBox.addAll({key: duration});
-    }
+  void saveTime(String key, int duration) {
+    if (key.isEmpty) return;
+    cacheTimeBox[key] = duration;
   }
 
   @override
@@ -54,7 +57,4 @@ class MapRepository implements LocalRepository {
     cacheBox.remove(key);
     cacheTimeBox.remove(key);
   }
-
-  @override
-  late bool isInitialized;
 }
