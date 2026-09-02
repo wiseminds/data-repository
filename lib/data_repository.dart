@@ -7,6 +7,7 @@ import 'cache/cache_description.dart';
 import 'cache/cache_mixin.dart';
 import 'local/local_repository.dart';
 import 'remote/remote_repository.dart';
+import 'remote/request_options.dart';
 import 'utils/api_config.dart';
 import 'utils/exception_formatter.dart';
 import 'utils/json_utils.dart';
@@ -42,6 +43,7 @@ abstract class DataRepository with ExceptionFormatter, CacheMixin {
     CacheDescription? cache,
     int? timeout,
     bool retryWithCache = false,
+    RequestOptions options = const RequestOptions(),
   }) async {
     final useCache = await shouldUseCache(localRepository, cache);
 
@@ -55,14 +57,16 @@ abstract class DataRepository with ExceptionFormatter, CacheMixin {
     var response = await remoteRepository.handleRequest<ResultType, Item>(
       request,
       timeout: timeout,
+      options: options,
     );
 
     if (!response.isSuccessful) {
       response = remoteRepository.handleError(response);
-      if (retryWithCache && cache != null) {
+      if (retryWithCache && cache != null && !response.isCancelled) {
         return handleRequest(
           request,
           cache: cache.copyWith(overrideTime: true),
+          options: options,
         );
       }
     }
@@ -80,13 +84,13 @@ abstract class DataRepository with ExceptionFormatter, CacheMixin {
     try {
       // Runs the onRequest interceptors so request-scoped interceptor state
       // (timers, counters) stays consistent on the cache path too.
-      request = request.build;
+      request = await request.build;
 
       final data = await localRepository.getData(cache.key);
       if (data == null) return null;
 
       final decoded = JsonUtils.decode(data.toString());
-      final response = ApiResponse<ResultType, Item>(
+      final response = await ApiResponse<ResultType, Item>(
         request: request.copyWith(dataKey: '', nestedKey: ''),
         bodyString: decoded,
         headers: const {},
@@ -108,7 +112,7 @@ abstract class DataRepository with ExceptionFormatter, CacheMixin {
     CacheDescription? cache,
   ) async {
     if (cache == null || cache.ignoreSave || cache.key.isEmpty) return;
-    if (response.body == null) return;
+    if (response.body == null || response.isCancelled) return;
 
     final data = validateData<ResultType, Item>(response);
     if (data == null) return;

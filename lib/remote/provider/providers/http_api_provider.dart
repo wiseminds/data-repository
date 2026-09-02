@@ -4,12 +4,14 @@ import 'dart:convert';
 import 'package:data_repository/remote/api_methods.dart';
 import 'package:data_repository/remote/api_request.dart';
 import 'package:data_repository/remote/api_response.dart';
+import 'package:data_repository/remote/cancellation_token.dart';
+import 'package:data_repository/remote/file_field.dart';
+import 'package:data_repository/remote/request_options.dart';
 import 'package:data_repository/utils/api_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
-import '../../file_field.dart';
 import '../api_provider.dart';
 
 /// Content type used when a file's type cannot be inferred from its path.
@@ -17,45 +19,59 @@ final _fallbackMediaType = MediaType('application', 'octet-stream');
 
 class HttpApiProvider extends ApiProvider {
   final http.Client _client;
+  final bool _ownsClient;
 
   /// Pass a [client] to reuse connections across requests, or to substitute a
   /// `MockClient` from `package:http/testing.dart` in tests. When omitted a
   /// private client is created and owned by this provider.
-  HttpApiProvider({http.Client? client}) : _client = client ?? http.Client();
+  HttpApiProvider({http.Client? client})
+    : _client = client ?? http.Client(),
+      _ownsClient = client == null;
 
-  /// Releases the underlying client. Only call this if the provider owns it.
-  void close() => _client.close();
+  /// Releases the underlying client, unless one was injected.
+  @override
+  void close() {
+    if (_ownsClient) _client.close();
+  }
 
   @override
   Future<ApiResponse<ResultType, InnerType>> send<ResultType, InnerType>(
-    ApiRequest<ResultType, InnerType> request,
-  ) async {
+    ApiRequest<ResultType, InnerType> request, [
+    RequestOptions options = const RequestOptions(),
+  ]) async {
     try {
+      options.cancelToken?.throwIfCancelled();
+
       // Inside the try: building runs the onRequest interceptors, and an
       // interceptor that throws must take the same handled path as a
       // transport failure rather than escaping this provider.
-      request = request.build;
+      request = await request.build;
 
-      if (request.isMultipart) {
-        final res = await _sendMultipart(request);
-        return ApiResponse<ResultType, InnerType>(
-          request: request,
-          bodyString: await res.stream.bytesToString(),
-          headers: res.headers,
-          statusCode: res.statusCode,
-        ).resolve;
-      }
+      final http.BaseRequest baseRequest = request.isMultipart
+          ? await _buildMultipart(request, options)
+          : _buildPlain(request);
 
-      final response = await runRequest(request).timeout(
-        Duration(seconds: request.timeout),
-        onTimeout: () => throw TimeoutException('Connection timed out'),
+      final seconds = options.timeout ?? request.timeout;
+      final streamed = await _race(
+        _client
+            .send(baseRequest)
+            .timeout(
+              Duration(seconds: seconds),
+              onTimeout: () => throw TimeoutException('Connection timed out'),
+            ),
+        options.cancelToken,
       );
 
-      return ApiResponse<ResultType, InnerType>(
+      final body = await _race(
+        _readBody(streamed, options.onReceiveProgress),
+        options.cancelToken,
+      );
+
+      return await ApiResponse<ResultType, InnerType>(
         request: request,
-        bodyString: response.body,
-        headers: response.headers,
-        statusCode: response.statusCode,
+        bodyString: body,
+        headers: streamed.headers,
+        statusCode: streamed.statusCode,
       ).resolve;
     } catch (e, stackTrace) {
       ApiConfig().log(
@@ -65,37 +81,35 @@ class HttpApiProvider extends ApiProvider {
     }
   }
 
-  Future<http.Response> runRequest(ApiRequest request) {
-    final uri = request.uri;
-    final headers = request.headers;
-    // Send no body at all when there is none, rather than the literal "null".
-    final body = request.body == null ? null : jsonEncode(request.body);
-
-    switch (request.method) {
-      case ApiMethods.delete:
-        return _client.delete(uri, headers: headers, body: body);
-      case ApiMethods.patch:
-        return _client.patch(uri, headers: headers, body: body);
-      case ApiMethods.head:
-        return _client.head(uri, headers: headers);
-      case ApiMethods.post:
-        return _client.post(uri, headers: headers, body: body);
-      case ApiMethods.put:
-        return _client.put(uri, headers: headers, body: body);
-      default:
-        return _client.get(uri, headers: headers);
-    }
+  /// Completes with whichever finishes first: the work, or cancellation.
+  Future<T> _race<T>(Future<T> work, CancellationToken? token) {
+    if (token == null) return work;
+    return Future.any<T>([
+      work,
+      token.whenCancelled.then((cause) => throw cause),
+    ]);
   }
 
-  Future<http.StreamedResponse> _sendMultipart(ApiRequest request) async {
+  http.Request _buildPlain(ApiRequest request) {
+    final req = http.Request(request.method ?? ApiMethods.get, request.uri)
+      ..headers.addAll(request.headers);
+    // Send no body at all when there is none, rather than the literal "null".
+    if (request.body != null) req.body = jsonEncode(request.body);
+    return req;
+  }
+
+  Future<http.BaseRequest> _buildMultipart(
+    ApiRequest request,
+    RequestOptions options,
+  ) async {
     final req = http.MultipartRequest(
-      request.method ?? ApiMethods.get,
+      request.method ?? ApiMethods.post,
       request.uri,
     );
 
     // A sequential loop, not Map.forEach with an async callback: forEach
     // discards the returned futures, so file parts read from disk could
-    // resolve after send() had already been called and be dropped.
+    // resolve after the request was sent and be dropped.
     for (final entry in (request.body ?? const {}).entries) {
       final value = entry.value;
       if (value is! FileFormField) {
@@ -133,7 +147,26 @@ class HttpApiProvider extends ApiProvider {
     }
 
     req.headers.addAll(request.headers);
-    return _client.send(req);
+    if (options.onSendProgress == null) return req;
+    return _ProgressRequest(req, options.onSendProgress!);
+  }
+
+  /// Reads the response body, reporting progress against Content-Length.
+  Future<String> _readBody(
+    http.StreamedResponse response,
+    ProgressCallback? onProgress,
+  ) async {
+    if (onProgress == null) return response.stream.bytesToString();
+
+    final total = response.contentLength ?? -1;
+    var received = 0;
+    final chunks = <List<int>>[];
+    await for (final chunk in response.stream) {
+      chunks.add(chunk);
+      received += chunk.length;
+      onProgress(received, total);
+    }
+    return utf8.decode(chunks.expand((c) => c).toList(), allowMalformed: true);
   }
 
   /// Resolves a part's content type, falling back to
@@ -147,5 +180,37 @@ class HttpApiProvider extends ApiProvider {
     } on FormatException {
       return _fallbackMediaType;
     }
+  }
+}
+
+/// Wraps a request so its outgoing bytes are counted as they are sent.
+class _ProgressRequest extends http.BaseRequest {
+  final http.BaseRequest _inner;
+  final ProgressCallback _onProgress;
+
+  _ProgressRequest(this._inner, this._onProgress)
+    : super(_inner.method, _inner.url) {
+    headers.addAll(_inner.headers);
+    followRedirects = _inner.followRedirects;
+    maxRedirects = _inner.maxRedirects;
+    persistentConnection = _inner.persistentConnection;
+  }
+
+  @override
+  int? get contentLength => _inner.contentLength;
+
+  @override
+  http.ByteStream finalize() {
+    super.finalize();
+    final total = _inner.contentLength ?? -1;
+    var sent = 0;
+    final source = _inner.finalize();
+    return http.ByteStream(
+      source.map((chunk) {
+        sent += chunk.length;
+        _onProgress(sent, total);
+        return chunk;
+      }),
+    );
   }
 }

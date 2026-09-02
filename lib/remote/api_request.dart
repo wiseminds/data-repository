@@ -2,6 +2,7 @@ import 'package:data_repository/remote/interceptors/api_interceptor.dart';
 import 'package:flutter/foundation.dart';
 
 import 'api_methods.dart';
+import 'retry_policy.dart';
 
 /// Sentinel distinguishing "argument omitted" from "argument explicitly null".
 const Object _unset = Object();
@@ -20,7 +21,7 @@ class ApiRequest<ResponseType, InnerType> {
   final Map<String, String> headers;
   final Map<String, dynamic> query;
   final List<ApiInterceptor> interceptors;
-  final List<Extra>? extra;
+  final RetryPolicy? retryPolicy;
   final ErrorDescription? error;
   final bool isMultipart;
 
@@ -28,7 +29,7 @@ class ApiRequest<ResponseType, InnerType> {
     String? requestId,
     this.hasPagination = false,
     this.isMultipart = false,
-    this.extra,
+    this.retryPolicy,
     this.override500Error = true,
     this.headers = const {},
     this.query = const {},
@@ -63,7 +64,7 @@ class ApiRequest<ResponseType, InnerType> {
     String? dataKey,
     String? baseUrl,
     bool? hasPagination,
-    List<Extra>? extra,
+    RetryPolicy? retryPolicy,
     int? timeout,
     bool? override500Error,
     bool? isMultipart,
@@ -85,7 +86,7 @@ class ApiRequest<ResponseType, InnerType> {
         : nestedKey as String?,
     isMultipart: isMultipart ?? this.isMultipart,
     path: path ?? this.path,
-    extra: extra ?? this.extra,
+    retryPolicy: retryPolicy ?? this.retryPolicy,
     error: identical(error, _unset) ? this.error : error as ErrorDescription?,
     timeout: timeout ?? this.timeout,
     override500Error: override500Error ?? this.override500Error,
@@ -96,13 +97,16 @@ class ApiRequest<ResponseType, InnerType> {
 
   /// Runs the `onRequest` interceptors and returns the resulting request.
   ///
+  /// Awaits each hook, so an interceptor may refresh a token or read from
+  /// storage before the request goes out.
+  ///
   /// Interceptor exceptions are intentionally not caught here — callers run
   /// this inside their own error handling so a throwing interceptor is
   /// reported rather than silently skipped.
-  ApiRequest<ResponseType, InnerType> get build {
+  Future<ApiRequest<ResponseType, InnerType>> get build async {
     var request = this;
     for (final interceptor in interceptors) {
-      request = interceptor.onRequest(request);
+      request = await interceptor.onRequest(request);
     }
     return request;
   }
@@ -132,10 +136,4 @@ class ErrorDescription {
   final String key;
 
   ErrorDescription({this.key = 'error'});
-}
-
-class Extra<T> {
-  final String key;
-
-  Extra(this.key);
 }

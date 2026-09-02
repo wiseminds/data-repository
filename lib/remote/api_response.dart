@@ -17,6 +17,13 @@ class ApiResponse<BodyType, InnerType> {
   /// (transport failure, or an interceptor threw during `onRequest`).
   static const int transportFailure = 0;
 
+  /// Status code used when the call was cancelled via its [CancellationToken].
+  static const int cancelled = -1;
+
+  /// True when this response is the result of a cancellation rather than a
+  /// failure worth reporting to the user.
+  bool get isCancelled => statusCode == ApiResponse.cancelled;
+
   final int statusCode;
   final Map<String, dynamic>? headers;
   final Map<String, dynamic>? extra;
@@ -102,13 +109,13 @@ class ApiResponse<BodyType, InnerType> {
   /// An interceptor that throws no longer disappears: the chain stops, the
   /// failure is logged, and the returned response carries the exception on
   /// [error]/[cause] so callers can see that resolution was incomplete.
-  ApiResponse<BodyType, InnerType> get resolve {
+  Future<ApiResponse<BodyType, InnerType>> get resolve async {
     var response = this;
     for (final interceptor in request.interceptors) {
       try {
-        response = isSuccessful
+        response = await (isSuccessful
             ? interceptor.onResponse(response)
-            : interceptor.onError(response);
+            : interceptor.onError(response));
       } catch (e, trace) {
         ApiConfig().log(
           'interceptor ${interceptor.runtimeType} threw while resolving '
