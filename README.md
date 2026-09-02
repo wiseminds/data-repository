@@ -387,6 +387,56 @@ For a fake with no HTTP at all, implement `ApiProvider` directly and inject it.
 
 ---
 
+## Upgrading from 0.5.x
+
+1.0.0 is a breaking release. The [CHANGELOG](CHANGELOG.md) carries the full
+list; these are the changes most projects hit.
+
+**Renames** are mechanical — `ExceptionFormater` → `ExceptionFormatter`,
+`Jsonutils` → `JsonUtils`, `ovveride500Error` → `override500Error`,
+`savToCache` → `saveToCache`. The CHANGELOG has a one-liner that applies them.
+
+**`build` and `resolve` return `Future`s**, and **`ApiProvider.send` takes an
+optional `RequestOptions`**. This only affects a custom provider or a
+hand-written fake:
+
+```dart
+Future<ApiResponse<R, I>> send<R, I>(
+  ApiRequest<R, I> request, [
+  RequestOptions options = const RequestOptions(),
+]) async {
+  request = await request.build;            // now awaited
+  return await ApiResponse<R, I>(...).resolve;
+}
+```
+
+Interceptors need no change — the hooks return `FutureOr`, which a synchronous
+implementation already satisfies.
+
+**Transport failures report `ApiResponse.transportFailure` (`0`)**, not the
+invented `420`, and a thrown `ApiError('...', 401)` now surfaces its own status
+rather than being overwritten.
+
+**`isSuccessful` also requires `error == null`**, so a 2xx whose interceptor
+chain threw is no longer reported as successful.
+
+**An unresolved `dataKey` returns null instead of the whole body.** This is the
+one most likely to look like a regression: a key that never existed used to
+fall back to the root and appear to work. If a body starts coming back null,
+set `ApiConfig().logger = debugPrint` and look for `did not resolve` — the log
+names the failing segment.
+
+**`ErrorDescription.key` defaults to the empty path** (the body itself) instead
+of `'error'`, matching what the old fallback produced for most APIs. If your
+errors really are nested, say so: `ErrorDescription(key: 'error')`.
+
+**`nestedKey` is deprecated** in favour of an absolute `dataKey` plus
+`paginationKey`. It still works unchanged.
+
+**SDK floor**: Dart `^3.10.3` / Flutter `>=3.38.4`.
+
+---
+
 ## API surface
 
 | Type | Role |
