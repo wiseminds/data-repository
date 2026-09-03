@@ -1,3 +1,20 @@
+## 1.0.1
+
+Fixes a runtime cast failure in `copyWith`. No API changes.
+
+- `ApiRequest.copyWith(body: ...)` no longer throws
+  `type '_Map<dynamic, dynamic>' is not a subtype of type 'Map<String, dynamic>?'`.
+  The sentinel that distinguishes an omitted argument from an explicit null
+  types `body` as `Object?`, so the analyzer stopped rejecting a
+  `Map<dynamic, dynamic>` — a `Map.from` copy, a platform-channel map, a map
+  literal with no context type — and the cast failed at runtime instead. Such a
+  map is now re-keyed; a non-map argument raises an `ArgumentError` naming
+  `body` rather than a bare cast error.
+- `ApiResponse.copyWith(body: ...)` had the same latent failure, reachable from
+  any interceptor doing `response.copyWith(body: decoded)`. A dynamic map is
+  re-keyed when `BodyType` expects string keys; a genuine type mismatch is
+  still reported.
+
 ## 1.0.0
 
 A breaking release. Every rename and signature change is listed below with its

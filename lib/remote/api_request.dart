@@ -134,8 +134,25 @@ class ApiRequest<ResponseType, InnerType> {
     override500Error: override500Error ?? this.override500Error,
     baseUrl: baseUrl ?? this.baseUrl,
     interceptors: [...?interceptors, ...this.interceptors],
-    body: identical(body, _unset) ? this.body : body as Map<String, dynamic>?,
+    body: identical(body, _unset) ? this.body : _asBody(body),
   );
+
+  /// Widens a caller-supplied map to `Map<String, dynamic>`.
+  ///
+  /// [copyWith] has to declare `body` as `Object?` to carry the sentinel, so
+  /// the analyzer no longer rejects a `Map<dynamic, dynamic>` — the shape a
+  /// map literal with no context type, `Map.from`, or a platform channel
+  /// hands back. A plain cast turned that into a runtime failure inside
+  /// copyWith; re-key instead, and reject a non-map with a message that names
+  /// the argument rather than a bare cast error.
+  static Map<String, dynamic>? _asBody(Object? value) {
+    if (value == null) return null;
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) {
+      return value.map((k, v) => MapEntry(k.toString(), v));
+    }
+    throw ArgumentError.value(value, 'body', 'must be a Map<String, dynamic>');
+  }
 
   /// Runs the `onRequest` interceptors and returns the resulting request.
   ///

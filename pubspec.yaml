@@ -1,6 +1,6 @@
 name: data_repository
 description: A repository layer for Flutter that unifies typed HTTP requests, interceptors, response caching, pagination and error normalisation behind one API.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/wiseminds/data-repository
 homepage: https://wiseminds.github.io/data-repository/
 issue_tracker: https://github.com/wiseminds/data-repository/issues

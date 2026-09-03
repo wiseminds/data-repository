@@ -85,13 +85,31 @@ class ApiResponse<BodyType, InnerType> {
         ? this.pagination
         : pagination as Pagination?,
     headers: headers ?? this.headers,
-    body: identical(body, _unset) ? this.body : body as BodyType?,
+    body: identical(body, _unset) ? this.body : _asBody(body),
     error: identical(error, _unset) ? this.error : error,
     extra: extra ?? this.extra,
     cause: identical(cause, _unset) ? this.cause : cause,
     stackTrace: stackTrace ?? this.stackTrace,
     request: request ?? this.request,
   );
+
+  /// Casts a caller-supplied body to [BodyType], re-keying a dynamic map
+  /// first.
+  ///
+  /// `body` is typed `Object?` for the sentinel, so an interceptor handing
+  /// back a `Map<dynamic, dynamic>` (a `Map.from` copy, a platform channel, a
+  /// map literal with no context type) passes the analyzer and only failed on
+  /// the cast. Anything that is still not a [BodyType] falls through to the
+  /// cast, so a genuine type mismatch is still reported.
+  BodyType? _asBody(Object? value) {
+    if (value is BodyType) return value;
+    if (value == null) return null;
+    if (value is Map) {
+      final rekeyed = Map<String, dynamic>.from(value);
+      if (rekeyed is BodyType) return rekeyed as BodyType;
+    }
+    return value as BodyType?;
+  }
 
   @override
   String toString() =>
