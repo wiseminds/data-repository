@@ -30,6 +30,13 @@ void main() {
     test('replaces a non-null value', () {
       expect(response.copyWith(body: const {'b': 2}).body, {'b': 2});
     });
+
+    test('accepts a dynamically keyed map', () {
+      // Regression: `body` is typed Object? for the sentinel, so a
+      // Map<dynamic, dynamic> from an interceptor reached a cast that threw.
+      final dynamic decoded = Map<dynamic, dynamic>.from({'b': 2});
+      expect(response.copyWith(body: decoded).body, {'b': 2});
+    });
   });
 
   group('ApiRequest.copyWith', () {
@@ -41,6 +48,21 @@ void main() {
       final withBody = request.copyWith(body: {'a': 1});
       expect(withBody.body, {'a': 1});
       expect(withBody.copyWith(body: null).body, isNull);
+    });
+
+    test('a dynamically keyed body map is re-keyed, not rejected', () {
+      // Regression: the sentinel types `body` as Object?, so a map built
+      // without a context type (`Map.from`, a platform channel, a bare `{}`)
+      // slipped past the analyzer and blew up on `as Map<String, dynamic>?`.
+      final dynamic decoded = Map<dynamic, dynamic>.from({'a': 1});
+      expect(request.copyWith(body: decoded).body, {'a': 1});
+    });
+
+    test('a body that is not a map is reported as a bad argument', () {
+      expect(
+        () => request.copyWith(body: 'not a map'),
+        throwsA(isA<ArgumentError>()),
+      );
     });
 
     test('interceptors are appended to the existing chain, not replaced', () {
