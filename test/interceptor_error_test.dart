@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:data_repository/data_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +23,15 @@ class ThrowingResponseInterceptor extends ApiInterceptor {
   @override
   ApiResponse<R, I> onResponse<R, I>(ApiResponse<R, I> response) =>
       throw StateError('decode blew up');
+}
+
+/// Decodes the error body unconditionally, the way a hand-rolled JSON
+/// interceptor commonly does. On a transport failure there is no body, so it
+/// overwrites a perfectly good error with null.
+class ClobberingErrorInterceptor extends ApiInterceptor {
+  @override
+  ApiResponse<R, I> onError<R, I>(ApiResponse<R, I> response) =>
+      response.copyWith(error: null);
 }
 
 class RecordingInterceptor extends ApiInterceptor {
@@ -104,6 +115,35 @@ void main() {
       );
 
       expect(recorder.sawError, isTrue);
+    });
+  });
+
+  group('an onError interceptor that discards the error', () {
+    test('handleError recovers the real message from the cause', () async {
+      // Nothing resolves this host, so the client throws the same
+      // SocketException-implementing ClientException a device does offline.
+      final client = MockClient(
+        (_) async => throw const SocketException('Failed host lookup'),
+      );
+      final offline = RemoteRepository(HttpApiProvider(client: client));
+
+      final response = await offline.handleRequest(
+        requestWith([ClobberingErrorInterceptor()]),
+      );
+
+      // The interceptor wiped the error, but the throwable survives.
+      expect(response.error, isNull);
+      expect(response.cause, isA<SocketException>());
+
+      final handled = offline.handleError(response);
+
+      // Regression: this reported the generic default message and code 7011,
+      // so an offline device was told "Something went wrong".
+      expect((handled.error as ApiError).code, ErrorCodes.network);
+      expect(
+        (handled.error as ApiError).message,
+        'Please check your internet connection and try again',
+      );
     });
   });
 
