@@ -160,9 +160,16 @@ class RemoteRepository with ExceptionFormatter {
   ApiResponse<ResultType, Item> handleError<ResultType, Item>(
     ApiResponse<ResultType, Item> response,
   ) {
-    var error = response.error is ApiError
-        ? response.error as ApiError
-        : formatErrorMessage(response.error, defaultErrorMessage ?? '');
+    // An onError interceptor that decodes the body unconditionally clears the
+    // error on a transport failure, where there is no body to decode. The
+    // throwable itself survives on [ApiResponse.cause], so fall back to it
+    // rather than reporting the generic default for a failure whose real
+    // cause is known.
+    final source = response.error ?? response.cause;
+
+    var error = source is ApiError
+        ? source
+        : formatErrorMessage(source, defaultErrorMessage ?? '');
 
     /// When the caller has opted out of surfacing server-side failures,
     /// replace the upstream error with the generic message.

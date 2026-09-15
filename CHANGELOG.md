@@ -1,3 +1,21 @@
+## 1.0.2
+
+Fixes a network failure being reported as the generic default message. No API
+changes.
+
+- `RemoteRepository.handleError` now falls back to `ApiResponse.cause` when the
+  response carries no error. An `onError` interceptor that decodes the body
+  unconditionally — the common hand-rolled JSON interceptor — sets `error` to
+  the decode of a body that does not exist on a transport failure, clearing the
+  `ApiError` the transport produced. `handleError` then formatted `null` and
+  reported the default "Something went wrong" with code `7011`, so a device with
+  no connection got no useful message. The original throwable is still on
+  `cause`, so it is normalised instead: a failed host lookup reports
+  "Please check your internet connection and try again" with `ErrorCodes.network`.
+
+  An interceptor that sets its own error still wins; this only applies when the
+  error is absent.
+
 ## 1.0.1
 
 Fixes a runtime cast failure in `copyWith`. No API changes.
